@@ -49,413 +49,413 @@ import bms.tool.mdprocessor.MusicDownloadProcessor;
  */
 public class MainController extends ApplicationAdapter {
 
-	private static final String VERSION = "beatoraja 0.8.1";
+    private static final String VERSION = "beatoraja 0.8.1";
 
-	public static final boolean debug = false;
+    public static final boolean debug = false;
 
-	/**
-	 * 起動時間
-	 */
-	private final long boottime = System.currentTimeMillis();
-	private final Calendar cl = Calendar.getInstance();
-	private long mouseMovedTime;
+    /**
+     * 起動時間
+     */
+    private final long boottime = System.currentTimeMillis();
+    private final Calendar cl = Calendar.getInstance();
+    private long mouseMovedTime;
 
-	private BMSPlayer bmsplayer;
-	private MusicDecide decide;
-	private MusicSelector selector;
-	private MusicResult result;
-	private CourseResult gresult;
-	private KeyConfiguration keyconfig;
-	private SkinConfiguration skinconfig;
+    private BMSPlayer bmsplayer;
+    private MusicDecide decide;
+    private MusicSelector selector;
+    private MusicResult result;
+    private CourseResult gresult;
+    private KeyConfiguration keyconfig;
+    private SkinConfiguration skinconfig;
 
-	private AudioDriver audio;
+    private AudioDriver audio;
 
-	private PlayerResource resource;
+    private PlayerResource resource;
 
-	private FreeTypeFontGenerator generator;
-	private BitmapFont systemfont;
-	private MessageRenderer messageRenderer;
+    private FreeTypeFontGenerator generator;
+    private BitmapFont systemfont;
+    private MessageRenderer messageRenderer;
 
-	private MainState current;
-	/**
-	 * 状態の開始時間
-	 */
-	private long starttime;
-	private long nowmicrotime;
+    private MainState current;
+    /**
+     * 状態の開始時間
+     */
+    private long starttime;
+    private long nowmicrotime;
 
-	private Config config;
-	private PlayerConfig player;
-	private PlayMode auto;
-	private boolean songUpdated;
+    private Config config;
+    private PlayerConfig player;
+    private PlayMode auto;
+    private boolean songUpdated;
 
-	private SongInformationAccessor infodb;
+    private SongInformationAccessor infodb;
 
-	private IRStatus[] ir;
+    private IRStatus[] ir;
 
-	private SpriteBatch sprite;
-	/**
-	 * 1曲プレイで指定したBMSファイル
-	 */
-	private Path bmsfile;
+    private SpriteBatch sprite;
+    /**
+     * 1曲プレイで指定したBMSファイル
+     */
+    private Path bmsfile;
 
-	private BMSPlayerInputProcessor input;
-	/**
-	 * FPSを描画するかどうか
-	 */
-	private boolean showfps;
-	/**
-	 * プレイデータアクセサ
-	 */
-	private PlayDataAccessor playdata;
+    private BMSPlayerInputProcessor input;
+    /**
+     * FPSを描画するかどうか
+     */
+    private boolean showfps;
+    /**
+     * プレイデータアクセサ
+     */
+    private PlayDataAccessor playdata;
 
-	static final Path configpath = Paths.get("config.json");
+    static final Path configpath = Paths.get("config.json");
 
-	private SystemSoundManager sound;
+    private SystemSoundManager sound;
 
-	private Thread screenshot;
+    private Thread screenshot;
 
-	private MusicDownloadProcessor download;
+    private MusicDownloadProcessor download;
 
-	public static final int timerCount = SkinProperty.TIMER_MAX + 1;
-	private final long[] timer = new long[timerCount];
-	public static final int offsetCount = SkinProperty.OFFSET_MAX + 1;
-	private final SkinOffset[] offset = new SkinOffset[offsetCount];
+    public static final int timerCount = SkinProperty.TIMER_MAX + 1;
+    private final long[] timer = new long[timerCount];
+    public static final int offsetCount = SkinProperty.OFFSET_MAX + 1;
+    private final SkinOffset[] offset = new SkinOffset[offsetCount];
 
-	protected TextureRegion black;
-	protected TextureRegion white;
+    protected TextureRegion black;
+    protected TextureRegion white;
 
-	public MainController(Path f, Config config, PlayerConfig player, PlayMode auto, boolean songUpdated) {
-		this.auto = auto;
-		this.config = config;
-		this.songUpdated = songUpdated;
+    public MainController(Path f, Config config, PlayerConfig player, PlayMode auto, boolean songUpdated) {
+        this.auto = auto;
+        this.config = config;
+        this.songUpdated = songUpdated;
 
-		for(int i = 0;i < offset.length;i++) {
-			offset[i] = new SkinOffset();
-		}
+        for(int i = 0;i < offset.length;i++) {
+            offset[i] = new SkinOffset();
+        }
 
-		if(player == null) {
-			player = PlayerConfig.readPlayerConfig(config.getPlayerpath(), config.getPlayername());
-		}
-		this.player = player;
+        if(player == null) {
+            player = PlayerConfig.readPlayerConfig(config.getPlayerpath(), config.getPlayername());
+        }
+        this.player = player;
 
-		this.bmsfile = f;
+        this.bmsfile = f;
 
-		if (config.isEnableIpfs()) {
-			Path ipfspath = Paths.get("ipfs").toAbsolutePath();
-			if (!ipfspath.toFile().exists())
-				ipfspath.toFile().mkdirs();
-			List<String> roots = new ArrayList<>(Arrays.asList(getConfig().getBmsroot()));
-			if (ipfspath.toFile().exists() && !roots.contains(ipfspath.toString())) {
-				roots.add(ipfspath.toString());
-				getConfig().setBmsroot(roots.toArray(new String[roots.size()]));
-			}
-		}
-		try {
-			Class.forName("org.sqlite.JDBC");
-			if(config.isUseSongInfo()) {
-				infodb = new SongInformationAccessor(config.getSonginfopath());
-			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+        if (config.isEnableIpfs()) {
+            Path ipfspath = Paths.get("ipfs").toAbsolutePath();
+            if (!ipfspath.toFile().exists())
+                ipfspath.toFile().mkdirs();
+            List<String> roots = new ArrayList<>(Arrays.asList(getConfig().getBmsroot()));
+            if (ipfspath.toFile().exists() && !roots.contains(ipfspath.toString())) {
+                roots.add(ipfspath.toString());
+                getConfig().setBmsroot(roots.toArray(new String[roots.size()]));
+            }
+        }
+        try {
+            Class.forName("org.sqlite.JDBC");
+            if(config.isUseSongInfo()) {
+                infodb = new SongInformationAccessor(config.getSonginfopath());
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
-		playdata = new PlayDataAccessor(config);
+        playdata = new PlayDataAccessor(config);
 
-		Array<IRStatus> irarray = new Array<IRStatus>();
-		for(IRConfig irconfig : player.getIrconfig()) {
-			final IRConnection ir = IRConnectionManager.getIRConnection(irconfig.getIrname());
-			if(ir != null) {
-				if(irconfig.getUserid().length() == 0 || irconfig.getPassword().length() == 0) {
-				} else {
-					IRResponse<IRPlayerData> response = ir.login(irconfig.getUserid(), irconfig.getPassword());
-					if(response.isSucceeded()) {
-						irarray.add(new IRStatus(irconfig, ir, response.getData()));
-					} else {
-						Logger.getGlobal().warning("IRへのログイン失敗 : " + response.getMessage());
-					}
-				}
-			}
-			
-		}
-		ir = irarray.toArray(IRStatus.class);
-		
-		switch(config.getAudioDriver()) {
-		case Config.AUDIODRIVER_PORTAUDIO:
-			try {
-				audio = new PortAudioDriver(config);
-			} catch(Throwable e) {
-				e.printStackTrace();
-				config.setAudioDriver(Config.AUDIODRIVER_SOUND);
-			}
-			break;
-		}
+        Array<IRStatus> irarray = new Array<IRStatus>();
+        for(IRConfig irconfig : player.getIrconfig()) {
+            final IRConnection ir = IRConnectionManager.getIRConnection(irconfig.getIrname());
+            if(ir != null) {
+                if(irconfig.getUserid().length() == 0 || irconfig.getPassword().length() == 0) {
+                } else {
+                    IRResponse<IRPlayerData> response = ir.login(irconfig.getUserid(), irconfig.getPassword());
+                    if(response.isSucceeded()) {
+                        irarray.add(new IRStatus(irconfig, ir, response.getData()));
+                    } else {
+                        Logger.getGlobal().warning("IRへのログイン失敗 : " + response.getMessage());
+                    }
+                }
+            }
 
-		sound = new SystemSoundManager(config);
-	}
+        }
+        ir = irarray.toArray(IRStatus.class);
 
-	public SkinOffset getOffset(int index) {
-		return offset[index];
-	}
+        switch(config.getAudioDriver()) {
+        case Config.AUDIODRIVER_PORTAUDIO:
+            try {
+                audio = new PortAudioDriver(config);
+            } catch(Throwable e) {
+                e.printStackTrace();
+                config.setAudioDriver(Config.AUDIODRIVER_SOUND);
+            }
+            break;
+        }
 
-	public SongDatabaseAccessor getSongDatabase() {
-		return MainLoader.getScoreDatabaseAccessor();
-	}
+        sound = new SystemSoundManager(config);
+    }
 
-	public SongInformationAccessor getInfoDatabase() {
-		return infodb;
-	}
+    public SkinOffset getOffset(int index) {
+        return offset[index];
+    }
 
-	public PlayDataAccessor getPlayDataAccessor() {
-		return playdata;
-	}
+    public SongDatabaseAccessor getSongDatabase() {
+        return MainLoader.getScoreDatabaseAccessor();
+    }
 
-	public SpriteBatch getSpriteBatch() {
-		return sprite;
-	}
+    public SongInformationAccessor getInfoDatabase() {
+        return infodb;
+    }
 
-	public PlayerResource getPlayerResource() {
-		return resource;
-	}
+    public PlayDataAccessor getPlayDataAccessor() {
+        return playdata;
+    }
 
-	public Config getConfig() {
-		return config;
-	}
+    public SpriteBatch getSpriteBatch() {
+        return sprite;
+    }
 
-	public PlayerConfig getPlayerConfig() {
-		return player;
-	}
+    public PlayerResource getPlayerResource() {
+        return resource;
+    }
 
-	public void changeState(MainStateType state) {
-		MainState newState = null;
-		switch (state) {
-		case MUSICSELECT:
-			if (this.bmsfile != null) {
-				exit();
-			} else {
-				newState = selector;
-			}
-			break;
-		case DECIDE:
-			newState = decide;
-			break;
-		case PLAY:
-			if (bmsplayer != null) {
-				bmsplayer.dispose();
-			}
-			bmsplayer = new BMSPlayer(this, resource);
-			newState = bmsplayer;
-			break;
-		case RESULT:
-			newState = result;
-			break;
-		case COURSERESULT:
-			newState = gresult;
-			break;
-		case CONFIG:
-			newState = keyconfig;
-			break;
-		case SKINCONFIG:
-			newState = skinconfig;
-			break;
-		}
+    public Config getConfig() {
+        return config;
+    }
 
-		if (newState != null && current != newState) {
-			Arrays.fill(timer, Long.MIN_VALUE);
-			if(current != null) {
-				current.setSkin(null);
-			}
-			newState.create();
-			if(newState.getSkin() != null) {
-				newState.getSkin().prepare(newState);				
-			}
-			current = newState;
-			starttime = System.nanoTime();
-			nowmicrotime = ((System.nanoTime() - starttime) / 1000);
-			current.prepare();
-		}
-		if (current.getStage() != null) {
-			Gdx.input.setInputProcessor(new InputMultiplexer(current.getStage(), input.getKeyBoardInputProcesseor()));
-		} else {
-			Gdx.input.setInputProcessor(input.getKeyBoardInputProcesseor());
-		}
-	}
-	
-	public MainState getCurrentState() {
-		return current;
-	}
+    public PlayerConfig getPlayerConfig() {
+        return player;
+    }
 
-	public void setPlayMode(PlayMode auto) {
-		this.auto = auto;
+    public void changeState(MainStateType state) {
+        MainState newState = null;
+        switch (state) {
+        case MUSICSELECT:
+            if (this.bmsfile != null) {
+                exit();
+            } else {
+                newState = selector;
+            }
+            break;
+        case DECIDE:
+            newState = decide;
+            break;
+        case PLAY:
+            if (bmsplayer != null) {
+                bmsplayer.dispose();
+            }
+            bmsplayer = new BMSPlayer(this, resource);
+            newState = bmsplayer;
+            break;
+        case RESULT:
+            newState = result;
+            break;
+        case COURSERESULT:
+            newState = gresult;
+            break;
+        case CONFIG:
+            newState = keyconfig;
+            break;
+        case SKINCONFIG:
+            newState = skinconfig;
+            break;
+        }
 
-	}
+        if (newState != null && current != newState) {
+            Arrays.fill(timer, Long.MIN_VALUE);
+            if(current != null) {
+                current.setSkin(null);
+            }
+            newState.create();
+            if(newState.getSkin() != null) {
+                newState.getSkin().prepare(newState);
+            }
+            current = newState;
+            starttime = System.nanoTime();
+            nowmicrotime = ((System.nanoTime() - starttime) / 1000);
+            current.prepare();
+        }
+        if (current.getStage() != null) {
+            Gdx.input.setInputProcessor(new InputMultiplexer(current.getStage(), input.getKeyBoardInputProcesseor()));
+        } else {
+            Gdx.input.setInputProcessor(input.getKeyBoardInputProcesseor());
+        }
+    }
 
-	@Override
-	public void create() {
-		final long t = System.currentTimeMillis();
-		sprite = new SpriteBatch();
-		SkinLoader.initPixmapResourcePool(config.getSkinPixmapGen());
+    public MainState getCurrentState() {
+        return current;
+    }
 
-		try {
-			generator = new FreeTypeFontGenerator(Gdx.files.internal("skin/default/VL-Gothic-Regular.ttf"));
-			FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-			parameter.size = 24;
-			systemfont = generator.generateFont(parameter);			
-		} catch (GdxRuntimeException e) {
-			Logger.getGlobal().severe("System Font１読み込み失敗");
-		}
-		messageRenderer = new MessageRenderer();
+    public void setPlayMode(PlayMode auto) {
+        this.auto = auto;
 
-		input = new BMSPlayerInputProcessor(config, player);
-		switch(config.getAudioDriver()) {
-		case Config.AUDIODRIVER_SOUND:
-			audio = new GdxSoundDriver(config);
-			break;
-		case Config.AUDIODRIVER_AUDIODEVICE:
-			audio = new GdxAudioDeviceDriver(config);
-			break;
-		}
+    }
 
-		resource = new PlayerResource(audio, config, player);
-		selector = new MusicSelector(this, songUpdated);
-		decide = new MusicDecide(this);
-		result = new MusicResult(this);
-		gresult = new CourseResult(this);
-		keyconfig = new KeyConfiguration(this);
-		skinconfig = new SkinConfiguration(this, player);
-		if (bmsfile != null) {
-			if(resource.setBMSFile(bmsfile, auto)) {
-				changeState(MainStateType.PLAY);
-			} else {
-				// ダミーステートに移行してすぐexitする
-				changeState(MainStateType.CONFIG);
-				exit();
-			}
-		} else {
-			changeState(MainStateType.MUSICSELECT);
-		}
+    @Override
+    public void create() {
+        final long t = System.currentTimeMillis();
+        sprite = new SpriteBatch();
+        SkinLoader.initPixmapResourcePool(config.getSkinPixmapGen());
 
-		Logger.getGlobal().info("初期化時間(ms) : " + (System.currentTimeMillis() - t));
+        try {
+            generator = new FreeTypeFontGenerator(Gdx.files.internal("skin/default/VL-Gothic-Regular.ttf"));
+            FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+            parameter.size = 24;
+            systemfont = generator.generateFont(parameter);
+        } catch (GdxRuntimeException e) {
+            Logger.getGlobal().severe("System Font１読み込み失敗");
+        }
+        messageRenderer = new MessageRenderer();
 
-		Thread polling = new Thread(() -> {
-			long time = 0;
-			for (;;) {
-				final long now = System.nanoTime() / 1000000;
-				if (time != now) {
-					time = now;
-					input.poll();
-				} else {
-					try {
-						Thread.sleep(0, 500000);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
-		});
-		polling.start();
+        input = new BMSPlayerInputProcessor(config, player);
+        switch(config.getAudioDriver()) {
+        case Config.AUDIODRIVER_SOUND:
+            audio = new GdxSoundDriver(config);
+            break;
+        case Config.AUDIODRIVER_AUDIODEVICE:
+            audio = new GdxAudioDeviceDriver(config);
+            break;
+        }
 
-		if(player.getTarget() >= TargetProperty.getAllTargetProperties().length) {
-			player.setTarget(0);
-		}
+        resource = new PlayerResource(audio, config, player);
+        selector = new MusicSelector(this, songUpdated);
+        decide = new MusicDecide(this);
+        result = new MusicResult(this);
+        gresult = new CourseResult(this);
+        keyconfig = new KeyConfiguration(this);
+        skinconfig = new SkinConfiguration(this, player);
+        if (bmsfile != null) {
+            if(resource.setBMSFile(bmsfile, auto)) {
+                changeState(MainStateType.PLAY);
+            } else {
+                // ダミーステートに移行してすぐexitする
+                changeState(MainStateType.CONFIG);
+                exit();
+            }
+        } else {
+            changeState(MainStateType.MUSICSELECT);
+        }
 
-		Pixmap plainPixmap = new Pixmap(2,1, Pixmap.Format.RGBA8888);
-		plainPixmap.drawPixel(0,0, Color.toIntBits(255,0,0,0));
-		plainPixmap.drawPixel(1,0, Color.toIntBits(255,255,255,255));
-		Texture plainTexture = new Texture(plainPixmap);
-		black = new TextureRegion(plainTexture,0,0,1,1);
-		white = new TextureRegion(plainTexture,1,0,1,1);
-		plainPixmap.dispose();
+        Logger.getGlobal().info("初期化時間(ms) : " + (System.currentTimeMillis() - t));
 
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+        Thread polling = new Thread(() -> {
+            long time = 0;
+            for (;;) {
+                final long now = System.nanoTime() / 1000000;
+                if (time != now) {
+                    time = now;
+                    input.poll();
+                } else {
+                    try {
+                        Thread.sleep(0, 500000);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
+        polling.start();
 
-		if (config.isEnableIpfs()) {
-			download = new MusicDownloadProcessor(config.getIpfsUrl(), (md5) -> {
-				SongData[] s = getSongDatabase().getSongDatas(md5);
-				String[] result = new String[s.length];
-				for(int i = 0;i < result.length;i++) {
-					result[i] = s[i].getPath();
-				}
-				return result;
-			});
-			download.start(null);
-		}
-		
-		if(ir.length > 0) {
-			messageRenderer.addMessage(ir.length + " IR Connection Succeed" ,5000, Color.GREEN, 1);
-		}
-	}
+        if(player.getTarget() >= TargetProperty.getAllTargetProperties().length) {
+            player.setTarget(0);
+        }
 
-	private long prevtime;
+        Pixmap plainPixmap = new Pixmap(2,1, Pixmap.Format.RGBA8888);
+        plainPixmap.drawPixel(0,0, Color.toIntBits(255,0,0,0));
+        plainPixmap.drawPixel(1,0, Color.toIntBits(255,255,255,255));
+        Texture plainTexture = new Texture(plainPixmap);
+        black = new TextureRegion(plainTexture,0,0,1,1);
+        white = new TextureRegion(plainTexture,1,0,1,1);
+        plainPixmap.dispose();
 
-	private final StringBuilder message = new StringBuilder();
+        Gdx.gl.glClearColor(0, 0, 0, 1);
 
-	@Override
-	public void render() {
+        if (config.isEnableIpfs()) {
+            download = new MusicDownloadProcessor(config.getIpfsUrl(), (md5) -> {
+                SongData[] s = getSongDatabase().getSongDatas(md5);
+                String[] result = new String[s.length];
+                for(int i = 0;i < result.length;i++) {
+                    result[i] = s[i].getPath();
+                }
+                return result;
+            });
+            download.start(null);
+        }
+
+        if(ir.length > 0) {
+            messageRenderer.addMessage(ir.length + " IR Connection Succeed" ,5000, Color.GREEN, 1);
+        }
+    }
+
+    private long prevtime;
+
+    private final StringBuilder message = new StringBuilder();
+
+    @Override
+    public void render() {
 //		input.poll();
-		nowmicrotime = ((System.nanoTime() - starttime) / 1000);
+        nowmicrotime = ((System.nanoTime() - starttime) / 1000);
 
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		current.render();
-		sprite.begin();
-		if (current.getSkin() != null) {
-			current.getSkin().updateCustomObjects(current);
-			current.getSkin().drawAllObjects(sprite, current);
-		}
-		sprite.end();
+        current.render();
+        sprite.begin();
+        if (current.getSkin() != null) {
+            current.getSkin().updateCustomObjects(current);
+            current.getSkin().drawAllObjects(sprite, current);
+        }
+        sprite.end();
 
-		final Stage stage = current.getStage();
-		if (stage != null) {
-			stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-			stage.draw();
-		}
+        final Stage stage = current.getStage();
+        if (stage != null) {
+            stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
+            stage.draw();
+        }
 
-		// show fps
-		if (showfps && systemfont != null) {
-			sprite.begin();
-			systemfont.setColor(Color.PURPLE);
-			message.setLength(0);
-			systemfont.draw(sprite, message.append("FPS ").append(Gdx.graphics.getFramesPerSecond()), 10,
-					config.getResolution().height - 2);
-			if(debug) {
-				message.setLength(0);
-				systemfont.draw(sprite, message.append("Skin Pixmap Images ").append(SkinLoader.getResource().size()), 10,
-						config.getResolution().height - 26);
-				message.setLength(0);
-				systemfont.draw(sprite, message.append("Total Memory Used(MB) ").append(Runtime.getRuntime().totalMemory() / (1024 * 1024)), 10,
-						config.getResolution().height - 50);
-				message.setLength(0);
-				systemfont.draw(sprite, message.append("Total Free Memory(MB) ").append(Runtime.getRuntime().freeMemory() / (1024 * 1024)), 10,
-						config.getResolution().height - 74);
-				message.setLength(0);
-				systemfont.draw(sprite, message.append("Max Sprite In Batch ").append(sprite.maxSpritesInBatch), 10,
-						config.getResolution().height - 98);
-				message.setLength(0);
-				systemfont.draw(sprite, message.append("Skin Pixmap Resource Size ").append(SkinLoader.getResource().size()), 10,
-						config.getResolution().height - 122);
-				message.setLength(0);
-				systemfont.draw(sprite, message.append("Stagefile Pixmap Resource Size ").append(selector.getStagefileResource().size()), 10,
-						config.getResolution().height - 146);
-				message.setLength(0);
-				systemfont.draw(sprite, message.append("Banner Pixmap Resource Size ").append(selector.getBannerResource().size()), 10,
-						config.getResolution().height - 170);
-			}
+        // show fps
+        if (showfps && systemfont != null) {
+            sprite.begin();
+            systemfont.setColor(Color.PURPLE);
+            message.setLength(0);
+            systemfont.draw(sprite, message.append("FPS ").append(Gdx.graphics.getFramesPerSecond()), 10,
+                    config.getResolution().height - 2);
+            if(debug) {
+                message.setLength(0);
+                systemfont.draw(sprite, message.append("Skin Pixmap Images ").append(SkinLoader.getResource().size()), 10,
+                        config.getResolution().height - 26);
+                message.setLength(0);
+                systemfont.draw(sprite, message.append("Total Memory Used(MB) ").append(Runtime.getRuntime().totalMemory() / (1024 * 1024)), 10,
+                        config.getResolution().height - 50);
+                message.setLength(0);
+                systemfont.draw(sprite, message.append("Total Free Memory(MB) ").append(Runtime.getRuntime().freeMemory() / (1024 * 1024)), 10,
+                        config.getResolution().height - 74);
+                message.setLength(0);
+                systemfont.draw(sprite, message.append("Max Sprite In Batch ").append(sprite.maxSpritesInBatch), 10,
+                        config.getResolution().height - 98);
+                message.setLength(0);
+                systemfont.draw(sprite, message.append("Skin Pixmap Resource Size ").append(SkinLoader.getResource().size()), 10,
+                        config.getResolution().height - 122);
+                message.setLength(0);
+                systemfont.draw(sprite, message.append("Stagefile Pixmap Resource Size ").append(selector.getStagefileResource().size()), 10,
+                        config.getResolution().height - 146);
+                message.setLength(0);
+                systemfont.draw(sprite, message.append("Banner Pixmap Resource Size ").append(selector.getBannerResource().size()), 10,
+                        config.getResolution().height - 170);
+            }
 
-			sprite.end();
-		}
+            sprite.end();
+        }
 
-		// show message
-		sprite.begin();
-		messageRenderer.render(current, sprite, 100, config.getResolution().height - 2);
-		sprite.end();
+        // show message
+        sprite.begin();
+        messageRenderer.render(current, sprite, 100, config.getResolution().height - 2);
+        sprite.end();
 
-		// TODO renderループに入れるのではなく、MusicDownloadProcessorのListenerとして実装したほうがいいのでは
-		if(download != null && download.isDownload()){
-			downloadIpfsMessageRenderer(download.getMessage());
-		}
+        // TODO renderループに入れるのではなく、MusicDownloadProcessorのListenerとして実装したほうがいいのでは
+        if(download != null && download.isDownload()){
+            downloadIpfsMessageRenderer(download.getMessage());
+        }
 
-		final long time = System.currentTimeMillis();
-		if(time > prevtime) {
-		    prevtime = time;
+        final long time = System.currentTimeMillis();
+        if(time > prevtime) {
+            prevtime = time;
             current.input();
             // event - move pressed
             if (input.isMousePressed()) {
@@ -470,12 +470,12 @@ public class MainController extends ApplicationAdapter {
 
             // マウスカーソル表示判定
             if(input.isMouseMoved()) {
-            	input.setMouseMoved(false);
-            	mouseMovedTime = time;
-			}
-			Mouse.setGrabbed(current == bmsplayer && time > mouseMovedTime + 5000 && Mouse.isInsideWindow());
+                input.setMouseMoved(false);
+                mouseMovedTime = time;
+            }
+            Mouse.setGrabbed(current == bmsplayer && time > mouseMovedTime + 5000 && Mouse.isInsideWindow());
 
-			// FPS表示切替
+            // FPS表示切替
             if (input.isActivated(KeyCommand.SHOW_FPS)) {
                 showfps = !showfps;
             }
@@ -511,392 +511,378 @@ public class MainController extends ApplicationAdapter {
             // screen shot
             if (input.isActivated(KeyCommand.SAVE_SCREENSHOT)) {
                 if (screenshot == null || !screenshot.isAlive()) {
-            		final byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, Gdx.graphics.getBackBufferWidth(),Gdx.graphics.getBackBufferHeight(), true);
+                    final byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, Gdx.graphics.getBackBufferWidth(),Gdx.graphics.getBackBufferHeight(), true);
                     screenshot = new Thread(() -> {
-                		// 全ピクセルのアルファ値を255にする(=透明色を無くす)
-                		for(int i = 3;i < pixels.length;i+=4) {
-                			pixels[i] = (byte) 0xff;
-                		}
-                    	new ScreenShotFileExporter().send(current, pixels);
+                        // 全ピクセルのアルファ値を255にする(=透明色を無くす)
+                        for(int i = 3;i < pixels.length;i+=4) {
+                            pixels[i] = (byte) 0xff;
+                        }
+                        new ScreenShotFileExporter().send(current, pixels);
                     });
                     screenshot.start();
                 }
             }
 
-            if (input.isActivated(KeyCommand.POST_TWITTER)) {
-                if (screenshot == null || !screenshot.isAlive()) {
-            		final byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, Gdx.graphics.getBackBufferWidth(),Gdx.graphics.getBackBufferHeight(), false);
-                    screenshot = new Thread(() -> {
-                		// 全ピクセルのアルファ値を255にする(=透明色を無くす)
-                		for(int i = 3;i < pixels.length;i+=4) {
-                			pixels[i] = (byte) 0xff;
-                		}
-                    	new ScreenShotTwitterExporter(player).send(current, pixels);
-                    });
-                    screenshot.start();
-                }
+            if (download != null && download.getDownloadpath() != null) {
+                this.updateSong(download.getDownloadpath());
+                download.setDownloadpath(null);
             }
-
-			if (download != null && download.getDownloadpath() != null) {
-            	this.updateSong(download.getDownloadpath());
-            	download.setDownloadpath(null);
+            if (updateSong != null && !updateSong.isAlive()) {
+                selector.getBarRender().updateBar();
+                updateSong = null;
             }
-			if (updateSong != null && !updateSong.isAlive()) {
-				selector.getBarRender().updateBar();
-				updateSong = null;
-			}
         }
-	}
+    }
 
-	@Override
-	public void dispose() {
-		saveConfig();
+    @Override
+    public void dispose() {
+        saveConfig();
 
-		if (bmsplayer != null) {
-			bmsplayer.dispose();
-		}
-		if (selector != null) {
-			selector.dispose();
-		}
-		if (decide != null) {
-			decide.dispose();
-		}
-		if (result != null) {
-			result.dispose();
-		}
-		if (gresult != null) {
-			gresult.dispose();
-		}
-		if (keyconfig != null) {
-			keyconfig.dispose();
-		}
-		if (skinconfig != null) {
-			skinconfig.dispose();
-		}
-		resource.dispose();
+        if (bmsplayer != null) {
+            bmsplayer.dispose();
+        }
+        if (selector != null) {
+            selector.dispose();
+        }
+        if (decide != null) {
+            decide.dispose();
+        }
+        if (result != null) {
+            result.dispose();
+        }
+        if (gresult != null) {
+            gresult.dispose();
+        }
+        if (keyconfig != null) {
+            keyconfig.dispose();
+        }
+        if (skinconfig != null) {
+            skinconfig.dispose();
+        }
+        resource.dispose();
 //		input.dispose();
-		SkinLoader.getResource().dispose();
-		ShaderManager.dispose();
-		if (download != null) {
-			download.dispose();
-		}
+        SkinLoader.getResource().dispose();
+        ShaderManager.dispose();
+        if (download != null) {
+            download.dispose();
+        }
 
-		Logger.getGlobal().info("全リソース破棄完了");
-	}
+        Logger.getGlobal().info("全リソース破棄完了");
+    }
 
-	@Override
-	public void pause() {
-		current.pause();
-	}
+    @Override
+    public void pause() {
+        current.pause();
+    }
 
-	@Override
-	public void resize(int width, int height) {
-		current.resize(width, height);
-	}
+    @Override
+    public void resize(int width, int height) {
+        current.resize(width, height);
+    }
 
-	@Override
-	public void resume() {
-		current.resume();
-	}
+    @Override
+    public void resume() {
+        current.resume();
+    }
 
-	public void saveConfig(){
-		Config.write(config);
-		PlayerConfig.write(config.getPlayerpath(), player);
-		Logger.getGlobal().info("設定情報を保存");
-	}
+    public void saveConfig(){
+        Config.write(config);
+        PlayerConfig.write(config.getPlayerpath(), player);
+        Logger.getGlobal().info("設定情報を保存");
+    }
 
-	public void exit() {
-		Gdx.app.exit();
-	}
+    public void exit() {
+        Gdx.app.exit();
+    }
 
-	public BMSPlayerInputProcessor getInputProcessor() {
-		return input;
-	}
+    public BMSPlayerInputProcessor getInputProcessor() {
+        return input;
+    }
 
-	public AudioDriver getAudioProcessor() {
-		return audio;
-	}
+    public AudioDriver getAudioProcessor() {
+        return audio;
+    }
 
-	public IRStatus[] getIRStatus() {
-		return ir;
-	}
+    public IRStatus[] getIRStatus() {
+        return ir;
+    }
 
-	public SystemSoundManager getSoundManager() {
-		return sound;
-	}
+    public SystemSoundManager getSoundManager() {
+        return sound;
+    }
 
-	public MusicDownloadProcessor getMusicDownloadProcessor(){
-		return download;
-	}
-	
-	public MessageRenderer getMessageRenderer() {
-		return messageRenderer;
-	}
+    public MusicDownloadProcessor getMusicDownloadProcessor(){
+        return download;
+    }
 
-	public long getPlayTime() {
-		return System.currentTimeMillis() - boottime;
-	}
+    public MessageRenderer getMessageRenderer() {
+        return messageRenderer;
+    }
 
-	public Calendar getCurrnetTime() {
-		cl.setTimeInMillis(System.currentTimeMillis());
-		return cl;
-	}
+    public long getPlayTime() {
+        return System.currentTimeMillis() - boottime;
+    }
 
-	public long getStartTime() {
-		return starttime / 1000000;
-	}
+    public Calendar getCurrnetTime() {
+        cl.setTimeInMillis(System.currentTimeMillis());
+        return cl;
+    }
 
-	public long getStartMicroTime() {
-		return starttime / 1000;
-	}
+    public long getStartTime() {
+        return starttime / 1000000;
+    }
 
-	public long getNowTime() {
-		return nowmicrotime / 1000;
-	}
+    public long getStartMicroTime() {
+        return starttime / 1000;
+    }
 
-	public long getNowTime(int id) {
-		if(isTimerOn(id)) {
-			return (nowmicrotime - getMicroTimer(id)) / 1000;
-		}
-		return 0;
-	}
+    public long getNowTime() {
+        return nowmicrotime / 1000;
+    }
 
-	public long getNowMicroTime() {
-		return nowmicrotime;
-	}
+    public long getNowTime(int id) {
+        if(isTimerOn(id)) {
+            return (nowmicrotime - getMicroTimer(id)) / 1000;
+        }
+        return 0;
+    }
 
-	public long getNowMicroTime(int id) {
-		if(isTimerOn(id)) {
-			return nowmicrotime - getMicroTimer(id);
-		}
-		return 0;
-	}
+    public long getNowMicroTime() {
+        return nowmicrotime;
+    }
 
-	public long getTimer(int id) {
-		return getMicroTimer(id) / 1000;
-	}
+    public long getNowMicroTime(int id) {
+        if(isTimerOn(id)) {
+            return nowmicrotime - getMicroTimer(id);
+        }
+        return 0;
+    }
 
-	public long getMicroTimer(int id) {
-		if (id >= 0 && id < timerCount) {
-			return timer[id];
-		} else {
-			return current.getSkin().getMicroCustomTimer(id);
-		}
-	}
+    public long getTimer(int id) {
+        return getMicroTimer(id) / 1000;
+    }
 
-	public boolean isTimerOn(int id) {
-		return getMicroTimer(id) != Long.MIN_VALUE;
-	}
+    public long getMicroTimer(int id) {
+        if (id >= 0 && id < timerCount) {
+            return timer[id];
+        } else {
+            return current.getSkin().getMicroCustomTimer(id);
+        }
+    }
 
-	public void setTimerOn(int id) {
-		setMicroTimer(id, nowmicrotime);
-	}
+    public boolean isTimerOn(int id) {
+        return getMicroTimer(id) != Long.MIN_VALUE;
+    }
 
-	public void setTimerOff(int id) {
-		setMicroTimer(id, Long.MIN_VALUE);
-	}
+    public void setTimerOn(int id) {
+        setMicroTimer(id, nowmicrotime);
+    }
 
-	public void setMicroTimer(int id, long microtime) {
-		if (id >= 0 && id < timerCount) {
-			timer[id] = microtime;
-		} else {
-			current.getSkin().setMicroCustomTimer(id, microtime);
-		}
-	}
+    public void setTimerOff(int id) {
+        setMicroTimer(id, Long.MIN_VALUE);
+    }
 
-	public void switchTimer(int id, boolean on) {
-		if(on) {
-			if(getMicroTimer(id) == Long.MIN_VALUE) {
-				setMicroTimer(id, nowmicrotime);
-			}
-		} else {
-			setMicroTimer(id, Long.MIN_VALUE);
-		}
-	}
+    public void setMicroTimer(int id, long microtime) {
+        if (id >= 0 && id < timerCount) {
+            timer[id] = microtime;
+        } else {
+            current.getSkin().setMicroCustomTimer(id, microtime);
+        }
+    }
 
-	private UpdateThread updateSong;
+    public void switchTimer(int id, boolean on) {
+        if(on) {
+            if(getMicroTimer(id) == Long.MIN_VALUE) {
+                setMicroTimer(id, nowmicrotime);
+            }
+        } else {
+            setMicroTimer(id, Long.MIN_VALUE);
+        }
+    }
 
-	public void updateSong(String path) {
-		if (updateSong == null || !updateSong.isAlive()) {
-			updateSong = new SongUpdateThread(path);
-			updateSong.start();
-		} else {
-			Logger.getGlobal().warning("楽曲更新中のため、更新要求は取り消されました");
-		}
-	}
+    private UpdateThread updateSong;
 
-	public void updateTable(TableBar reader) {
-		if (updateSong == null || !updateSong.isAlive()) {
-			updateSong = new TableUpdateThread(reader);
-			updateSong.start();
-		} else {
-			Logger.getGlobal().warning("楽曲更新中のため、更新要求は取り消されました");
-		}
-	}
+    public void updateSong(String path) {
+        if (updateSong == null || !updateSong.isAlive()) {
+            updateSong = new SongUpdateThread(path);
+            updateSong.start();
+        } else {
+            Logger.getGlobal().warning("楽曲更新中のため、更新要求は取り消されました");
+        }
+    }
 
-	private UpdateThread downloadIpfs;
+    public void updateTable(TableBar reader) {
+        if (updateSong == null || !updateSong.isAlive()) {
+            updateSong = new TableUpdateThread(reader);
+            updateSong.start();
+        } else {
+            Logger.getGlobal().warning("楽曲更新中のため、更新要求は取り消されました");
+        }
+    }
 
-	public void downloadIpfsMessageRenderer(String message) {
-		if (downloadIpfs == null || !downloadIpfs.isAlive()) {
-			downloadIpfs = new DownloadMessageThread(message);
-			downloadIpfs.start();
-		}
-	}
-	
-	public static String getVersion() {
-		return VERSION.replace("beatoraja", "LR2oraja");
-	}
+    private UpdateThread downloadIpfs;
 
-	abstract class UpdateThread extends Thread {
+    public void downloadIpfsMessageRenderer(String message) {
+        if (downloadIpfs == null || !downloadIpfs.isAlive()) {
+            downloadIpfs = new DownloadMessageThread(message);
+            downloadIpfs.start();
+        }
+    }
 
-		protected String message;
+    public static String getVersion() {
+        return VERSION.replace("beatoraja", "LR2oraja");
+    }
 
-		public UpdateThread(String message) {
-			this.message = message;
-		}
-	}
+    abstract class UpdateThread extends Thread {
 
-	/**
-	 * 楽曲データベース更新用スレッド
-	 *
-	 * @author exch
-	 */
-	class SongUpdateThread extends UpdateThread {
+        protected String message;
 
-		private final String path;
+        public UpdateThread(String message) {
+            this.message = message;
+        }
+    }
 
-		public SongUpdateThread(String path) {
-			super("updating folder : " + (path == null ? "ALL" : path));
-			this.path = path;
-		}
+    /**
+     * 楽曲データベース更新用スレッド
+     *
+     * @author exch
+     */
+    class SongUpdateThread extends UpdateThread {
 
-		public void run() {
-			Message message = messageRenderer.addMessage(this.message, Color.CYAN, 1);
-			getSongDatabase().updateSongDatas(path, config.getBmsroot(), false, getInfoDatabase());
-			message.stop();
-		}
-	}
+        private final String path;
 
-	/**
-	 * 難易度表更新用スレッド
-	 *
-	 * @author exch
-	 */
-	class TableUpdateThread extends UpdateThread {
+        public SongUpdateThread(String path) {
+            super("updating folder : " + (path == null ? "ALL" : path));
+            this.path = path;
+        }
 
-		private final TableBar accessor;
+        public void run() {
+            Message message = messageRenderer.addMessage(this.message, Color.CYAN, 1);
+            getSongDatabase().updateSongDatas(path, config.getBmsroot(), false, getInfoDatabase());
+            message.stop();
+        }
+    }
 
-		public TableUpdateThread(TableBar bar) {
-			super("updating table : " + bar.getAccessor().name);
-			accessor = bar;
-		}
+    /**
+     * 難易度表更新用スレッド
+     *
+     * @author exch
+     */
+    class TableUpdateThread extends UpdateThread {
 
-		public void run() {
-			Message message = messageRenderer.addMessage(this.message, Color.CYAN, 1);
-			TableData td = accessor.getAccessor().read();
-			if (td != null) {
-				accessor.getAccessor().write(td);
-				accessor.setTableData(td);
-			}
-			message.stop();
-		}
-	}
+        private final TableBar accessor;
 
-	class DownloadMessageThread extends UpdateThread {
-		public DownloadMessageThread(String message) {
-			super(message);
-		}
+        public TableUpdateThread(TableBar bar) {
+            super("updating table : " + bar.getAccessor().name);
+            accessor = bar;
+        }
 
-		public void run() {
-			Message message = messageRenderer.addMessage(this.message, Color.LIME, 1);
-			while (download != null && download.isDownload() && download.getMessage() != null) {
-				message.setText(download.getMessage());
-				try {
-					sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			message.stop();
-		}
-	}
+        public void run() {
+            Message message = messageRenderer.addMessage(this.message, Color.CYAN, 1);
+            TableData td = accessor.getAccessor().read();
+            if (td != null) {
+                accessor.getAccessor().write(td);
+                accessor.setTableData(td);
+            }
+            message.stop();
+        }
+    }
 
-	/**
-	 * BGM、効果音セット管理用クラス
-	 * 
-	 * @author exch
-	 */
-	public static class SystemSoundManager {
-		/**
-		 * 検出されたBGMセットのディレクトリパス
-		 */
-		private Array<Path> bgms = new Array<Path>();
-		/**
-		 * 現在のBGMセットのディレクトリパス
-		 */
-		private Path currentBGMPath;
-		/**
-		 * 検出された効果音セットのディレクトリパス
-		 */
-		private Array<Path> sounds = new Array<Path>();
-		/**
-		 * 現在の効果音セットのディレクトリパス
-		 */
-		private Path currentSoundPath;
+    class DownloadMessageThread extends UpdateThread {
+        public DownloadMessageThread(String message) {
+            super(message);
+        }
 
-		public SystemSoundManager(Config config) {
-			if(config.getBgmpath() != null && config.getBgmpath().length() > 0) {
-				scan(Paths.get(config.getBgmpath()).toAbsolutePath(), bgms, "select.wav");				
-			}
-			if(config.getSoundpath() != null && config.getSoundpath().length() > 0) {
-				scan(Paths.get(config.getSoundpath()).toAbsolutePath(), sounds, "clear.wav");				
-			}
-			Logger.getGlobal().info("検出されたBGM Set : " + bgms.size + " Sound Set : " + sounds.size);
-		}
+        public void run() {
+            Message message = messageRenderer.addMessage(this.message, Color.LIME, 1);
+            while (download != null && download.isDownload() && download.getMessage() != null) {
+                message.setText(download.getMessage());
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            message.stop();
+        }
+    }
 
-		public void shuffle() {
-			if(bgms.size > 0) {
-				currentBGMPath = bgms.get((int) (Math.random() * bgms.size));
-			}
-			if(sounds.size > 0) {
-				currentSoundPath = sounds.get((int) (Math.random() * sounds.size));
-			}
-			Logger.getGlobal().info("BGM Set : " + currentBGMPath + " Sound Set : " + currentSoundPath);
-		}
+    /**
+     * BGM、効果音セット管理用クラス
+     *
+     * @author exch
+     */
+    public static class SystemSoundManager {
+        /**
+         * 検出されたBGMセットのディレクトリパス
+         */
+        private Array<Path> bgms = new Array<Path>();
+        /**
+         * 現在のBGMセットのディレクトリパス
+         */
+        private Path currentBGMPath;
+        /**
+         * 検出された効果音セットのディレクトリパス
+         */
+        private Array<Path> sounds = new Array<Path>();
+        /**
+         * 現在の効果音セットのディレクトリパス
+         */
+        private Path currentSoundPath;
 
-		public Path getBGMPath() {
-			return currentBGMPath;
-		}
+        public SystemSoundManager(Config config) {
+            if(config.getBgmpath() != null && config.getBgmpath().length() > 0) {
+                scan(Paths.get(config.getBgmpath()).toAbsolutePath(), bgms, "select.wav");
+            }
+            if(config.getSoundpath() != null && config.getSoundpath().length() > 0) {
+                scan(Paths.get(config.getSoundpath()).toAbsolutePath(), sounds, "clear.wav");
+            }
+            Logger.getGlobal().info("検出されたBGM Set : " + bgms.size + " Sound Set : " + sounds.size);
+        }
 
-		public Path getSoundPath() {
-			return currentSoundPath;
-		}
+        public void shuffle() {
+            if(bgms.size > 0) {
+                currentBGMPath = bgms.get((int) (Math.random() * bgms.size));
+            }
+            if(sounds.size > 0) {
+                currentSoundPath = sounds.get((int) (Math.random() * sounds.size));
+            }
+            Logger.getGlobal().info("BGM Set : " + currentBGMPath + " Sound Set : " + currentSoundPath);
+        }
 
-		private void scan(Path p, Array<Path> paths, String name) {
-			if (Files.isDirectory(p)) {
-				try (Stream<Path> sub = Files.list(p)) {
-					sub.forEach((t) -> {
-						scan(t, paths, name);
-					});
-					if (AudioDriver.getPaths(p.resolve(name).toString()).length > 0) {
-						paths.add(p);
-					}
-				} catch (IOException e) {
-				}
-			} 
-		}
-	}
+        public Path getBGMPath() {
+            return currentBGMPath;
+        }
 
-	public static class IRStatus {
-		
-		public final IRConfig config;
-		public final IRConnection connection;
-		public final IRPlayerData player;
-		
-		public IRStatus(IRConfig config, IRConnection connection, IRPlayerData player) {
-			this.config = config;
-			this.connection = connection;
-			this.player = player;
-		}
-	}
+        public Path getSoundPath() {
+            return currentSoundPath;
+        }
+
+        private void scan(Path p, Array<Path> paths, String name) {
+            if (Files.isDirectory(p)) {
+                try (Stream<Path> sub = Files.list(p)) {
+                    sub.forEach((t) -> {
+                        scan(t, paths, name);
+                    });
+                    if (AudioDriver.getPaths(p.resolve(name).toString()).length > 0) {
+                        paths.add(p);
+                    }
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
+    public static class IRStatus {
+
+        public final IRConfig config;
+        public final IRConnection connection;
+        public final IRPlayerData player;
+
+        public IRStatus(IRConfig config, IRConnection connection, IRPlayerData player) {
+            this.config = config;
+            this.connection = connection;
+            this.player = player;
+        }
+    }
 }
