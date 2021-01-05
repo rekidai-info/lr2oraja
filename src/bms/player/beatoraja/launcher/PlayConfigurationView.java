@@ -198,6 +198,8 @@ public class PlayConfigurationView implements Initializable {
     private CheckBox enableIpfs;
     @FXML
     private TextField ipfsurl;
+    @FXML
+    private CheckBox enableVersionCheck;
 
     @FXML
     private VBox skin;
@@ -343,6 +345,7 @@ public class PlayConfigurationView implements Initializable {
 
         enableIpfs.setSelected(config.isEnableIpfs());
         ipfsurl.setText(config.getIpfsUrl());
+        enableVersionCheck.setSelected(config.isEnableVersionCheck());
 
         if(players.getItems().contains(config.getPlayername())) {
             players.setValue(config.getPlayername());
@@ -460,6 +463,7 @@ public class PlayConfigurationView implements Initializable {
 
         config.setEnableIpfs(enableIpfs.isSelected());
         config.setIpfsUrl(ipfsurl.getText());
+        config.setEnableVersionCheck(enableVersionCheck.isSelected());
 
         commitPlayer();
 

@@ -39,116 +39,116 @@ import bms.player.beatoraja.song.SongInformationAccessor;
  * @author exch
  */
 public class MainLoader extends Application {
-	
-	private static final boolean ALLOWS_32BIT_JAVA = false;
-	
-	private static SongDatabaseAccessor songdb;
-	
-	private static final Set<String> illegalSongs = new HashSet<String>();
 
-	private static Path bmsPath;
+        private static final boolean ALLOWS_32BIT_JAVA = false;
 
-	private static VersionChecker version;
-	
-	public static void main(String[] args) {
-		
-		if(!ALLOWS_32BIT_JAVA && !System.getProperty( "os.arch" ).contains( "64")) {
-			JOptionPane.showMessageDialog(null, "This Application needs 64bit-Java.", "Error", JOptionPane.ERROR_MESSAGE);
-			System.exit(1);
-		}
+        private static SongDatabaseAccessor songdb;
 
-		Logger logger = Logger.getGlobal();
-		try {
-			logger.addHandler(new FileHandler("beatoraja_log.xml"));
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+        private static final Set<String> illegalSongs = new HashSet<String>();
 
-		PlayMode auto = null;
-		for (String s : args) {
-			if (s.startsWith("-")) {
-				if (s.equals("-a")) {
-					auto = PlayMode.AUTOPLAY;
-				}
-				if (s.equals("-p")) {
-					auto = PlayMode.PRACTICE;
-				}
-				if (s.equals("-r") || s.equals("-r1")) {
-					auto = PlayMode.REPLAY_1;
-				}
-				if (s.equals("-r2")) {
-					auto = PlayMode.REPLAY_2;
-				}
-				if (s.equals("-r3")) {
-					auto = PlayMode.REPLAY_3;
-				}
-				if (s.equals("-r4")) {
-					auto = PlayMode.REPLAY_4;
-				}
-				if (s.equals("-s")) {
-					auto = PlayMode.PLAY;
-				}
-			} else {
-				bmsPath = Paths.get(s);
-				if(auto == null) {
-					auto = PlayMode.PLAY;
-				}
-			}
-		}
-		
-		if(Files.exists(MainController.configpath) && (bmsPath != null || auto != null)) {
-			IRConnectionManager.getAllAvailableIRConnectionName();
-			play(bmsPath, auto, true, null, null, bmsPath != null);
-		} else {
-			launch(args);			
-		}
-	}
+        private static Path bmsPath;
 
-	public static void play(Path f, PlayMode auto, boolean forceExit, Config config, PlayerConfig player, boolean songUpdated) {
-		if(config == null) {
-			config = Config.read();			
-		}
-		
-		if(illegalSongs.size() > 0) {
-			JOptionPane.showMessageDialog(null, "This Application detects " + illegalSongs.size() + " illegal BMS songs. \n Remove them, update song database and restart.", "Error", JOptionPane.ERROR_MESSAGE);
-			System.exit(1);
-		}
+        private static VersionChecker version;
 
-		try {
-			MainController main = new MainController(f, config, player, auto, songUpdated);
+        public static void main(String[] args) {
 
-			LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-			cfg.width = config.getResolution().width;
-			cfg.height = config.getResolution().height;
+                if(!ALLOWS_32BIT_JAVA && !System.getProperty( "os.arch" ).contains( "64")) {
+                        JOptionPane.showMessageDialog(null, "This Application needs 64bit-Java.", "Error", JOptionPane.ERROR_MESSAGE);
+                        System.exit(1);
+                }
 
-			// fullscreen
-			switch (config.getDisplaymode()) {
-				case FULLSCREEN:
-					cfg.fullscreen = true;
-					break;
-				case BORDERLESS:
-					System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
-					cfg.fullscreen = false;
-					break;
-				case WINDOW:
-					cfg.fullscreen = false;
-					break;
-			}
-			// vSync
-			cfg.vSyncEnabled = config.isVsync();
-			cfg.backgroundFPS = config.getMaxFramePerSecond();
-			cfg.foregroundFPS = config.getMaxFramePerSecond();
-			cfg.title = MainController.getVersion();
-			
-			cfg.audioDeviceBufferSize = config.getAudioDeviceBufferSize();
-			cfg.audioDeviceSimultaneousSources = config.getAudioDeviceSimultaneousSources();
-			cfg.forceExit = forceExit;
-			if(config.getAudioDriver() != Config.AUDIODRIVER_SOUND && config.getAudioDriver() != Config.AUDIODRIVER_AUDIODEVICE) {
-				LwjglApplicationConfiguration.disableAudio = true;				
-			}
-			// System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL",
-			// "true");
-			new LwjglApplication(main, cfg);
+                Logger logger = Logger.getGlobal();
+                try {
+                        logger.addHandler(new FileHandler("beatoraja_log.xml"));
+                } catch (Throwable e) {
+                        e.printStackTrace();
+                }
+
+                PlayMode auto = null;
+                for (String s : args) {
+                        if (s.startsWith("-")) {
+                                if (s.equals("-a")) {
+                                        auto = PlayMode.AUTOPLAY;
+                                }
+                                if (s.equals("-p")) {
+                                        auto = PlayMode.PRACTICE;
+                                }
+                                if (s.equals("-r") || s.equals("-r1")) {
+                                        auto = PlayMode.REPLAY_1;
+                                }
+                                if (s.equals("-r2")) {
+                                        auto = PlayMode.REPLAY_2;
+                                }
+                                if (s.equals("-r3")) {
+                                        auto = PlayMode.REPLAY_3;
+                                }
+                                if (s.equals("-r4")) {
+                                        auto = PlayMode.REPLAY_4;
+                                }
+                                if (s.equals("-s")) {
+                                        auto = PlayMode.PLAY;
+                                }
+                        } else {
+                                bmsPath = Paths.get(s);
+                                if(auto == null) {
+                                        auto = PlayMode.PLAY;
+                                }
+                        }
+                }
+
+                if(Files.exists(MainController.configpath) && (bmsPath != null || auto != null)) {
+                        // IRConnectionManager.getAllAvailableIRConnectionName();
+                        play(bmsPath, auto, true, null, null, bmsPath != null);
+                } else {
+                        launch(args);
+                }
+        }
+
+        public static void play(Path f, PlayMode auto, boolean forceExit, Config config, PlayerConfig player, boolean songUpdated) {
+                if(config == null) {
+                        config = Config.read();
+                }
+
+                if(illegalSongs.size() > 0) {
+                        JOptionPane.showMessageDialog(null, "This Application detects " + illegalSongs.size() + " illegal BMS songs. \n Remove them, update song database and restart.", "Error", JOptionPane.ERROR_MESSAGE);
+                        System.exit(1);
+                }
+
+                try {
+                        MainController main = new MainController(f, config, player, auto, songUpdated);
+
+                        LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
+                        cfg.width = config.getResolution().width;
+                        cfg.height = config.getResolution().height;
+
+                        // fullscreen
+                        switch (config.getDisplaymode()) {
+                                case FULLSCREEN:
+                                        cfg.fullscreen = true;
+                                        break;
+                                case BORDERLESS:
+                                        System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
+                                        cfg.fullscreen = false;
+                                        break;
+                                case WINDOW:
+                                        cfg.fullscreen = false;
+                                        break;
+                        }
+                        // vSync
+                        cfg.vSyncEnabled = config.isVsync();
+                        cfg.backgroundFPS = config.getMaxFramePerSecond();
+                        cfg.foregroundFPS = config.getMaxFramePerSecond();
+                        cfg.title = MainController.getVersion();
+
+                        cfg.audioDeviceBufferSize = config.getAudioDeviceBufferSize();
+                        cfg.audioDeviceSimultaneousSources = config.getAudioDeviceSimultaneousSources();
+                        cfg.forceExit = forceExit;
+                        if(config.getAudioDriver() != Config.AUDIODRIVER_SOUND && config.getAudioDriver() != Config.AUDIODRIVER_AUDIODEVICE) {
+                                LwjglApplicationConfiguration.disableAudio = true;
+                        }
+                        // System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL",
+                        // "true");
+                        new LwjglApplication(main, cfg);
 
 //			Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
 //
@@ -181,136 +181,153 @@ public class MainLoader extends Application {
 //			cfg.setAudioConfig(config.getAudioDeviceSimultaneousSources(), config.getAudioDeviceBufferSize(), 1);
 //
 //			new Lwjgl3Application(main, cfg);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			Logger.getGlobal().severe(e.getClass().getName() + " : " + e.getMessage());
-		}
-	}
+                } catch (Throwable e) {
+                        e.printStackTrace();
+                        Logger.getGlobal().severe(e.getClass().getName() + " : " + e.getMessage());
+                }
+        }
 
-	public static Graphics.DisplayMode[] getAvailableDisplayMode() {
-		return LwjglApplicationConfiguration.getDisplayModes();
-	}
+        public static Graphics.DisplayMode[] getAvailableDisplayMode() {
+                return LwjglApplicationConfiguration.getDisplayModes();
+        }
 
-	public static Graphics.DisplayMode getDesktopDisplayMode() {
-		return LwjglApplicationConfiguration.getDesktopDisplayMode();
-	}
-	
-	public static SongDatabaseAccessor getScoreDatabaseAccessor() {
-		if(songdb == null) {
-			try {
-				Config config = Config.read();
-				Class.forName("org.sqlite.JDBC");
-				songdb = new SQLiteSongDatabaseAccessor(config.getSongpath(), config.getBmsroot());			
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		return songdb;
-	}
+        public static Graphics.DisplayMode getDesktopDisplayMode() {
+                return LwjglApplicationConfiguration.getDesktopDisplayMode();
+        }
 
-	public static VersionChecker getVersionChecker() {
-		if(version == null) {
-			version = new GithubVersionChecker();
-		}
-		return version;
-	}
+        public static SongDatabaseAccessor getScoreDatabaseAccessor() {
+                if(songdb == null) {
+                        try {
+                                Config config = Config.read();
+                                Class.forName("org.sqlite.JDBC");
+                                songdb = new SQLiteSongDatabaseAccessor(config.getSongpath(), config.getBmsroot());
+                        } catch (ClassNotFoundException e) {
+                                e.printStackTrace();
+                        }
+                }
+                return songdb;
+        }
 
-	public static void setVersionChecker(VersionChecker version) {
-		if(version != null) {
-			MainLoader.version = version;
-		}
-	}
+        public static VersionChecker getVersionChecker() {
+                if(version == null) {
+                        Config config = Config.read();
+                        if (config.isEnableVersionCheck()) {
+                            version = new GithubVersionChecker();
+                        } else {
+                            version = new NullVersionChecker();
+                        }
+                }
+                return version;
+        }
 
-	public static Path getBMSPath() {
-		return bmsPath;
-	}
+        public static void setVersionChecker(VersionChecker version) {
+                if(version != null) {
+                        MainLoader.version = version;
+                }
+        }
 
-	public static void putIllegalSong(String hash) {
-		illegalSongs.add(hash);
-	}
-	
-	public static String[] getIllegalSongs() {
-		return illegalSongs.toArray(new String[illegalSongs.size()]);
-	}
-	
-	public static int getIllegalSongCount() {
-		return illegalSongs.size();
-	}
-	
-	@Override
-	public void start(javafx.stage.Stage primaryStage) throws Exception {
-		Config config = Config.read();
+        public static Path getBMSPath() {
+                return bmsPath;
+        }
 
-		try {
+        public static void putIllegalSong(String hash) {
+                illegalSongs.add(hash);
+        }
+
+        public static String[] getIllegalSongs() {
+                return illegalSongs.toArray(new String[illegalSongs.size()]);
+        }
+
+        public static int getIllegalSongCount() {
+                return illegalSongs.size();
+        }
+
+        @Override
+        public void start(javafx.stage.Stage primaryStage) throws Exception {
+                Config config = Config.read();
+
+                try {
 //			final long t = System.currentTimeMillis();
-			ResourceBundle bundle = ResourceBundle.getBundle("resources.UIResources");
-			FXMLLoader loader = new FXMLLoader(
-					MainLoader.class.getResource("/bms/player/beatoraja/launcher/PlayConfigurationView.fxml"), bundle);
-			VBox stackPane = (VBox) loader.load();
-			PlayConfigurationView bmsinfo = (PlayConfigurationView) loader.getController();
-			bmsinfo.setBMSInformationLoader(this);
-			bmsinfo.update(config);
-			Scene scene = new Scene(stackPane, stackPane.getPrefWidth(), stackPane.getPrefHeight());
-			primaryStage.setScene(scene);
-			primaryStage.setTitle(MainController.getVersion() + " configuration");
-			primaryStage.setOnCloseRequest((event) -> {
-				bmsinfo.exit();
-			});
-			primaryStage.show();
+                        ResourceBundle bundle = ResourceBundle.getBundle("resources.UIResources");
+                        FXMLLoader loader = new FXMLLoader(
+                                        MainLoader.class.getResource("/bms/player/beatoraja/launcher/PlayConfigurationView.fxml"), bundle);
+                        VBox stackPane = (VBox) loader.load();
+                        PlayConfigurationView bmsinfo = (PlayConfigurationView) loader.getController();
+                        bmsinfo.setBMSInformationLoader(this);
+                        bmsinfo.update(config);
+                        Scene scene = new Scene(stackPane, stackPane.getPrefWidth(), stackPane.getPrefHeight());
+                        primaryStage.setScene(scene);
+                        primaryStage.setTitle(MainController.getVersion() + " configuration");
+                        primaryStage.setOnCloseRequest((event) -> {
+                                bmsinfo.exit();
+                        });
+                        primaryStage.show();
 //			Logger.getGlobal().info("初期化時間(ms) : " + (System.currentTimeMillis() - t));
 
-		} catch (IOException e) {
-			Logger.getGlobal().severe(e.getMessage());
-			e.printStackTrace();
-		}
-	}
+                } catch (IOException e) {
+                        Logger.getGlobal().severe(e.getMessage());
+                        e.printStackTrace();
+                }
+        }
 
-	public interface VersionChecker {
-		public String getMessage();
-		public String getDownloadURL();
-	}
+        public interface VersionChecker {
+                public String getMessage();
+                public String getDownloadURL();
+        }
 
-	private static class GithubVersionChecker implements VersionChecker {
+        private static class GithubVersionChecker implements VersionChecker {
 
-		private String dlurl;
-		private String message;
+                private String dlurl;
+                private String message;
 
-		public String getMessage() {
-			if(message == null) {
-				getInformation();
-			}
-			return message;
-		}
+                public String getMessage() {
+                        if(message == null) {
+                                getInformation();
+                        }
+                        return message;
+                }
 
-		public String getDownloadURL() {
-			if(message == null) {
-				getInformation();
-			}
-			return dlurl;
-		}
+                public String getDownloadURL() {
+                        if(message == null) {
+                                getInformation();
+                        }
+                        return dlurl;
+                }
 
-		private void getInformation() {
-			try {
-				URL url = new URL("https://api.github.com/repos/exch-bms2/beatoraja/releases/latest");
-				ObjectMapper mapper = new ObjectMapper();
-				GithubLastestRelease lastestData = mapper.readValue(url, GithubLastestRelease.class);
-				final String name = lastestData.name;
-				if (MainController.getVersion().contains(name)) {
-					message = "最新版を利用中です";
-				} else {
-					message = String.format("最新版[%s]を利用可能です。", name);
-					dlurl = "https://mocha-repository.info/download/beatoraja" + name + ".zip";
-				}
-			} catch (Exception e) {
-				Logger.getGlobal().warning("最新版URL取得時例外:" + e.getMessage());
-				message = "バージョン情報を取得できませんでした";
-			}
-		}
-	}
+                private void getInformation() {
+                        try {
+                                URL url = new URL("https://api.github.com/repos/exch-bms2/beatoraja/releases/latest");
+                                ObjectMapper mapper = new ObjectMapper();
+                                GithubLastestRelease lastestData = mapper.readValue(url, GithubLastestRelease.class);
+                                final String name = lastestData.name;
+                                if (MainController.getVersion().contains(name)) {
+                                        message = "最新版を利用中です";
+                                } else {
+                                        message = String.format("最新版[%s]を利用可能です。", name);
+                                        dlurl = "https://mocha-repository.info/download/beatoraja" + name + ".zip";
+                                }
+                        } catch (Exception e) {
+                                Logger.getGlobal().warning("最新版URL取得時例外:" + e.getMessage());
+                                message = "バージョン情報を取得できませんでした";
+                        }
+                }
+        }
 
-	@JsonIgnoreProperties(ignoreUnknown=true)
-	static class GithubLastestRelease{
-		public String name;
-	}
+        private static class NullVersionChecker implements VersionChecker {
+            @Override
+            public String getMessage() {
+                return "Version Unknown";
+            }
+
+            @Override
+            public String getDownloadURL() {
+                return "https://mocha-repository.info/download.php";
+            }
+        }
+
+        @JsonIgnoreProperties(ignoreUnknown=true)
+        static class GithubLastestRelease{
+                public String name;
+        }
 
 }
