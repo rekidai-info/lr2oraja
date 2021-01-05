@@ -226,7 +226,8 @@ public class KeyBoardInputProcesseor extends BMSPlayerInputDevice implements Inp
     }
 
     @Override
-    public boolean scrolled(float arg0, float arg1) {
+    public boolean scrolled(float amountX, float amountY) {
+        this.bmsPlayerInputProcessor.scroll -= amountY;
         return false;
     }
 }
