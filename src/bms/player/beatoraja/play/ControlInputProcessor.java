@@ -205,10 +205,12 @@ public class ControlInputProcessor {
                 }
 
                 final LaneRenderer lanerender = player.getLanerender();
-                final PlayConfig playconfig = lanerender.getPlayConfig();
-                lanerender.setGreenValue(getDurationAtStart());
-                if (playconfig.getFixhispeed() != PlayConfig.FIX_HISPEED_OFF) {
-                    playconfig.setHispeed((float) ((2400f / (lanerender.getNowBPM() / 100) / getDurationAtStart()) * (1 - (playconfig.isEnablelanecover() ? playconfig.getLanecover() : 0))));
+                if (lanerender.getNowBPM() > 0 && getDurationAtStart() > 0) {
+                    final PlayConfig playconfig = lanerender.getPlayConfig();
+                    lanerender.setGreenValue(getDurationAtStart());
+                    if (playconfig.getFixhispeed() != PlayConfig.FIX_HISPEED_OFF) {
+                        playconfig.setHispeed((float) ((2400f / (lanerender.getNowBPM() / 100) / getDurationAtStart()) * (1 - (playconfig.isEnablelanecover() ? playconfig.getLanecover() : 0))));
+                    }
                 }
         }
 
