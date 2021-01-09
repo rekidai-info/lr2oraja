@@ -37,8 +37,8 @@ public class ControlInputProcessor {
         private float coverChangeMarginHigh = 0.01f;
         private long coverSpeedSwitchDuration = 500;
 
-        private int durationAtStart;
-
+        private boolean hispeedAutoAdjust;
+        
         public ControlInputProcessor(BMSPlayer player, PlayMode autoplay) {
                 this.player = player;
                 this.autoplay = autoplay;
@@ -49,6 +49,7 @@ public class ControlInputProcessor {
                 coverChangeMarginLow = playConfig.getLanecovermarginlow();
                 coverChangeMarginHigh = playConfig.getLanecovermarginhigh();
                 coverSpeedSwitchDuration = playConfig.getLanecoverswitchduration();
+                hispeedAutoAdjust = playConfig.isEnableHispeedAutoAdjust();
 
                 switch (this.player.getMode()) {
                 case POPN_9K:
@@ -190,6 +191,10 @@ public class ControlInputProcessor {
                 } else {
                         lanerender.setHiddenCover(lanerender.getHiddenCover() - value);
                 }
+                
+                if (hispeedAutoAdjust && lanerender.getNowBPM() > 0) {
+			lanerender.resetHispeed(lanerender.getNowBPM());
+		}
         }
 
         /*
@@ -202,15 +207,6 @@ public class ControlInputProcessor {
                 if (l - lanecovertiming > 50) {
                         setCoverValue((sign ? 1 : -1) * (l - laneCoverStartTiming > coverSpeedSwitchDuration ? coverChangeMarginHigh : coverChangeMarginLow));
                         lanecovertiming = l;
-                }
-
-                final LaneRenderer lanerender = player.getLanerender();
-                if (lanerender.getNowBPM() > 0 && getDurationAtStart() > 0) {
-                    final PlayConfig playconfig = lanerender.getPlayConfig();
-                    lanerender.setGreenValue(getDurationAtStart());
-                    if (playconfig.getFixhispeed() != PlayConfig.FIX_HISPEED_OFF) {
-                        playconfig.setHispeed((float) ((2400f / (lanerender.getNowBPM() / 100) / getDurationAtStart()) * (1 - (playconfig.isEnablelanecover() ? playconfig.getLanecover() : 0))));
-                    }
                 }
         }
 
@@ -456,13 +452,5 @@ public class ControlInputProcessor {
                                 hschanged[i] = false;
                         }
                 }
-        }
-
-        public void setDurationAtStart(int durationAtStart) {
-            this.durationAtStart = durationAtStart;
-        }
-
-        public int getDurationAtStart() {
-            return this.durationAtStart;
         }
 }

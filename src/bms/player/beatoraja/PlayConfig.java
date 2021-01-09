@@ -72,6 +72,10 @@ public class PlayConfig implements Cloneable {
 	 */
 	private int lanecoverswitchduration = 500;
 	/**
+	 * HI-SPEED固定自動調整：レーンカバーを変化するとHI-SPEED固定を現在のBPMに自動的に調整する（皿チョン）
+	 */
+	private boolean hispeedautoadjust = false;
+	/**
 	 * 判定アルゴリズム
 	 */
 	private String judgetype = JudgeAlgorithm.Combo.name();
@@ -183,6 +187,14 @@ public class PlayConfig implements Cloneable {
 		this.lanecoverswitchduration = lanecoverswitchduration;
 	}
 
+	public boolean isEnableHispeedAutoAdjust() {
+		return hispeedautoadjust;
+	}
+
+	public void setHispeedAutoAdjust(boolean hispeedautoadjust) {
+		this.hispeedautoadjust = hispeedautoadjust;
+	}
+	
 	public String getJudgetype() {
 		for(JudgeAlgorithm type : JudgeAlgorithm.values()) {
 			if(type.name().equals(judgetype)) {

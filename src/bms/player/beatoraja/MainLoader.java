@@ -127,11 +127,13 @@ public class MainLoader extends Application {
                                         cfg.fullscreen = true;
                                         break;
                                 case BORDERLESS:
-                                        System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
+                                        cfg.undecorated = true;
                                         cfg.fullscreen = false;
+                                        cfg.resizable = false;
                                         break;
                                 case WINDOW:
                                         cfg.fullscreen = false;
+                                        cfg.resizable = true;
                                         break;
                         }
                         // vSync

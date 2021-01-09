@@ -548,7 +548,6 @@ public class BMSPlayer extends MainState {
                                 keyinput.startJudge(model, replay != null ? replay.keylog : null);
                                 keysound.startBGPlay(model, starttimeoffset * 1000);
                                 Logger.getGlobal().info("STATE_PLAYに移行");
-                                control.setDurationAtStart(lanerender.getCurrentDuration());
                         }
                         break;
                 // プレイ
