@@ -105,6 +105,9 @@ public class Config implements Validatable {
          * BGノート音のボリューム
          */
         private float bgvolume = 1.0f;
+        
+        private int refreshRate = 0;
+        
         /**
          * 最大FPS。垂直同期OFFの時のみ有効
          */
@@ -278,6 +281,14 @@ public class Config implements Validatable {
                 this.audioDeviceSimultaneousSources = audioDeviceSimultaneousSources;
         }
 
+        public int getRefreshRate() {
+            	return refreshRate;
+        }
+
+        public void setRefreshRate(int refreshRate) {
+            	this.refreshRate = refreshRate;
+        }
+    
         public int getMaxFramePerSecond() {
                 return maxFramePerSecond;
         }
@@ -648,6 +659,7 @@ public class Config implements Validatable {
                 systemvolume = MathUtils.clamp(systemvolume, 0f, 1f);
                 keyvolume = MathUtils.clamp(keyvolume, 0f, 1f);
                 bgvolume = MathUtils.clamp(bgvolume, 0f, 1f);
+                refreshRate = MathUtils.clamp(refreshRate, 0, 1000);
                 maxFramePerSecond = MathUtils.clamp(maxFramePerSecond, 0, 10000);
                 prepareFramePerSecond = MathUtils.clamp(prepareFramePerSecond, 1, 10000);
         maxSearchBarCount = MathUtils.clamp(maxSearchBarCount, 1, 100);

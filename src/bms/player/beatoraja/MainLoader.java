@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+import com.badlogic.gdx.backends.lwjgl.MyLwjglGraphics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -150,7 +151,7 @@ public class MainLoader extends Application {
                         }
                         // System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL",
                         // "true");
-                        new LwjglApplication(main, cfg);
+                        new LwjglApplication(main, cfg, new MyLwjglGraphics(cfg));
 
 //			Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
 //
@@ -189,7 +190,7 @@ public class MainLoader extends Application {
                 }
         }
 
-        public static Graphics.DisplayMode[] getAvailableDisplayMode() {
+	public static Graphics.DisplayMode[] getAvailableDisplayMode() {
                 return LwjglApplicationConfiguration.getDisplayModes();
         }
 

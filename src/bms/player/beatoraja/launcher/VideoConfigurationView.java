@@ -28,6 +28,8 @@ public class VideoConfigurationView implements Initializable {
 	private CheckBox vSync;
 
 	@FXML
+	private Spinner<Integer> refreshRate;
+	@FXML
 	private Spinner<Integer> maxFps;
 	@FXML
 	private Spinner<Integer> missLayerTime;
@@ -46,6 +48,7 @@ public class VideoConfigurationView implements Initializable {
 		bgaOp.getSelectionModel().select(config.getBga());
 		bgaExpand.getSelectionModel().select(config.getBgaExpand());
 		maxFps.getValueFactory().setValue(config.getMaxFramePerSecond());
+		refreshRate.getValueFactory().setValue(config.getRefreshRate());
 	}
 
 	public void updatePlayer(PlayerConfig player) {
@@ -59,6 +62,7 @@ public class VideoConfigurationView implements Initializable {
 		config.setBga(bgaOp.getSelectionModel().getSelectedIndex());
 		config.setBgaExpand(bgaExpand.getSelectionModel().getSelectedIndex());
 		config.setMaxFramePerSecond(maxFps.getValue());
+		config.setRefreshRate(refreshRate.getValue());
 	}
 
 	public void commitPlayer(PlayerConfig player) {
