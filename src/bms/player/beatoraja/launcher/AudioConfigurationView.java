@@ -13,6 +13,7 @@ import bms.player.beatoraja.audio.PortAudioDriver;
 import bms.player.beatoraja.launcher.PlayConfigurationView.OptionListCell;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
@@ -23,6 +24,8 @@ public class AudioConfigurationView implements Initializable {
 	private ComboBox<Integer> audio;
 	@FXML
 	private ComboBox<String> audioname;
+	@FXML
+	private CheckBox wasapiExclusive;
 	@FXML
 	private Spinner<Integer> audiobuffer;
 	@FXML
@@ -62,6 +65,7 @@ public class AudioConfigurationView implements Initializable {
 		this.config = config;
 		
 		audio.setValue(config.getAudioDriver());
+		wasapiExclusive.setSelected(config.isWASAPIExclusive());
 		audiobuffer.getValueFactory().setValue(config.getAudioDeviceBufferSize());
 		audiosim.getValueFactory().setValue(config.getAudioDeviceSimultaneousSources());
 		audioFreqOption.setValue(config.getAudioFreqOption());
@@ -76,6 +80,7 @@ public class AudioConfigurationView implements Initializable {
 	public void commit() {
 		config.setAudioDriver(audio.getValue());
 		config.setAudioDriverName(audioname.getValue());
+		config.setWASAPIExclusive(wasapiExclusive.isSelected());
 		config.setAudioDeviceBufferSize(audiobuffer.getValue());
 		config.setAudioDeviceSimultaneousSources(audiosim.getValue());
 		config.setAudioFreqOption(audioFreqOption.getValue());

@@ -2,10 +2,16 @@ package bms.player.beatoraja.audio;
 
 import java.nio.ByteBuffer;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.portaudio.*;
 
 import bms.player.beatoraja.Config;
+
+class MyDeviceInfo extends DeviceInfo {
+    public int id;
+}
 
 /**
  * PortAudioドライバ
@@ -14,7 +20,7 @@ import bms.player.beatoraja.Config;
  */
 public class PortAudioDriver extends AbstractAudioDriver<PCM> implements Runnable {
 
-	private static DeviceInfo[] devices;
+	private static MyDeviceInfo[] devices;
 	
 	private BlockingStream stream;
 
@@ -31,30 +37,64 @@ public class PortAudioDriver extends AbstractAudioDriver<PCM> implements Runnabl
 	
 	private final Thread mixer;
 
-	public static DeviceInfo[] getDevices() {
+	public static MyDeviceInfo[] getDevices() {
 		if(devices == null) {
 			PortAudio.initialize();
-			
-			devices = new DeviceInfo[PortAudio.getDeviceCount()];
+
+			List<MyDeviceInfo> result = new ArrayList<MyDeviceInfo>(PortAudio.getDeviceCount());
+			devices = new MyDeviceInfo[PortAudio.getDeviceCount()];
 			for(int i = 0;i < devices.length;i++) {
-				devices[i] = PortAudio.getDeviceInfo(i);
+				DeviceInfo info = PortAudio.getDeviceInfo(i);
+				if (info.maxOutputChannels >= 2) {
+				    	MyDeviceInfo myInfo = new MyDeviceInfo();
+				    	myInfo.id = i;
+				    	myInfo.version = info.version;
+				    	myInfo.name = info.name + ' ' + (int) info.defaultSampleRate + "Hz";
+				    	myInfo.hostApi = info.hostApi;
+				    	myInfo.maxInputChannels = info.maxInputChannels;
+				    	myInfo.maxOutputChannels = info.maxOutputChannels;
+				    	myInfo.defaultLowInputLatency = info.defaultLowInputLatency;
+				    	myInfo.defaultHighInputLatency = info.defaultHighInputLatency;
+				    	myInfo.defaultLowOutputLatency = info.defaultLowOutputLatency;
+				    	myInfo.defaultHighOutputLatency = info.defaultHighOutputLatency;
+				    	myInfo.defaultSampleRate = info.defaultSampleRate;
+				    	result.add(myInfo);
+				}
+				
+				/*System.out.println(String.format("version=%d", info.version));
+				System.out.println(String.format("name=%s", info.name));
+				System.out.println(String.format("hostApi=%d", info.hostApi));
+				System.out.println(String.format("maxInputChannels=%d", info.maxInputChannels));
+				System.out.println(String.format("maxOutputChannels=%d", info.maxOutputChannels));
+				System.out.println(String.format("defaultLowInputLatency=%f", info.defaultLowInputLatency));
+				System.out.println(String.format("defaultHighInputLatency=%f", info.defaultHighInputLatency));
+				System.out.println(String.format("defaultLowOutputLatency=%f", info.defaultLowOutputLatency));
+				System.out.println(String.format("defaultHighOutputLatency=%f", info.defaultHighOutputLatency));
+				System.out.println(String.format("defaultSampleRate=%f", info.defaultSampleRate));
+				System.out.println();*/
 			}
+
+			devices = result.toArray(new MyDeviceInfo[result.size()]);
 		}
 		return devices;
 	}
 
 	public PortAudioDriver(Config config) {
 		super(config.getSongResourceGen());
-		DeviceInfo[] devices = getDevices();
+		MyDeviceInfo[] devices = getDevices();
 		// Get the default device and setup the stream parameters.
 		int deviceId = 0;
+		DeviceInfo deviceInfo = null;
 		for(int i = 0;i < devices.length;i++) {
 			if(devices[i].name.equals(config.getAudioDriverName())) {
-				deviceId = i;
+				deviceId = devices[i].id;
+				deviceInfo = devices[i];
 				break;
 			}
 		}
-		DeviceInfo deviceInfo = devices[ deviceId ];
+		if (deviceInfo == null && devices != null && devices.length > 0) {
+		    deviceInfo = devices[0];
+		}
 		sampleRate = (int)deviceInfo.defaultSampleRate;
 		channels = 2;
 //		System.out.println( "  deviceId    = " + deviceId );
@@ -65,13 +105,13 @@ public class PortAudioDriver extends AbstractAudioDriver<PCM> implements Runnabl
 		streamParameters.channelCount = channels;
 		streamParameters.device = deviceId;
 		int framesPerBuffer = config.getAudioDeviceBufferSize();
-		streamParameters.suggestedLatency = ((double)framesPerBuffer) / sampleRate;
+		streamParameters.suggestedLatency = framesPerBuffer / deviceInfo.defaultSampleRate;
 //		System.out.println( "  suggestedLatency = " + streamParameters.suggestedLatency );
 
 		int flags = 0;
 		
 		// Open a stream for output.
-		stream = PortAudio.openStream( null, streamParameters, sampleRate, framesPerBuffer, flags );
+		stream = PortAudio.openStream( null, streamParameters, sampleRate, framesPerBuffer, flags, config.isWASAPIExclusive() ? 1 : 0 );
 
 		stream.start();
 

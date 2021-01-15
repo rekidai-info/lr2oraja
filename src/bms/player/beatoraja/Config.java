@@ -64,6 +64,10 @@ public class Config implements Validatable {
          */
         private String audioDriverName = null;
         /**
+         * WASAPI排他モード
+         */
+        private boolean wasapiExclusive = false;
+        /**
          * オーディオバッファサイズ。大きすぎると音声遅延が発生し、少なすぎるとノイズが発生する
          */
         private int audioDeviceBufferSize = 384;
@@ -479,6 +483,14 @@ public class Config implements Validatable {
                 this.audioDriverName = audioDriverName;
         }
 
+        public boolean isWASAPIExclusive() {
+            	return wasapiExclusive;
+        }
+
+        public void setWASAPIExclusive(boolean wasapiExclusive) {
+            	this.wasapiExclusive = wasapiExclusive;
+        }
+    
         public int getAudioFreqOption() {
                 return audioFreqOption;
         }

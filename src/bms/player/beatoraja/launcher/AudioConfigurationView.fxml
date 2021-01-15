@@ -34,6 +34,13 @@
 		<ComboBox fx:id="audioname" prefHeight="24.0"
 			prefWidth="261.0" />
 	</HBox>
+	<HBox prefHeight="13.0" prefWidth="730.0">
+		<VBox.margin>
+			<Insets bottom="10.0" top="10.0" />
+		</VBox.margin>
+		<CheckBox fx:id="wasapiExclusive" prefHeight="24.0"
+			prefWidth="200.0" text="%WASAPI_EXCLUSIVE"/>
+	</HBox>
 	<HBox prefHeight="40.0" prefWidth="730.0">
 		<Label prefHeight="25.0" prefWidth="150.0"
 			text="%AUDIO_BUF_SIZE" />
