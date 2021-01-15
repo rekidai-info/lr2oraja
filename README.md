@@ -7,6 +7,7 @@
 * 皿チョン（beatoraja 正式導入版）
 * フルスクリーン時にリフレッシュレートを指定できる機能
 * 選曲画面で緑数値が変更できない不具合を修正
+* WASAPI 共有/排他モードを追加
 
 なお、beatoraja を Java 15 以降のバージョンで起動する方法は以下を参照してください
 https://codoc.jp/sites/haaEBtTkhA/entries/rDDRUocsng
