@@ -76,6 +76,10 @@ public class PlayConfig implements Cloneable {
 	 */
 	private boolean hispeedautoadjust = false;
 	/**
+	 * Auto Judge Timing
+	 */
+	private int autojudgetiming = 0;
+	/**
 	 * 判定アルゴリズム
 	 */
 	private String judgetype = JudgeAlgorithm.Combo.name();
@@ -193,6 +197,14 @@ public class PlayConfig implements Cloneable {
 
 	public void setHispeedAutoAdjust(boolean hispeedautoadjust) {
 		this.hispeedautoadjust = hispeedautoadjust;
+	}
+	
+	public int getAutoJudgeTiming() {
+		return autojudgetiming;
+	}
+
+	public void setAutoJudgeTiming(int autojudgetiming) {
+		this.autojudgetiming = autojudgetiming;
 	}
 	
 	public String getJudgetype() {

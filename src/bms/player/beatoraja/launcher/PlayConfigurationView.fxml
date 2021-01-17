@@ -180,6 +180,15 @@
                                                 <Tooltip text="%HISPEED_AUTO_ADJUST_TOOLTIP" textAlignment="CENTER" />
                                             </tooltip>
                                          </CheckBox>
+                                         <Label text="%AUTO_JUDGE_TIMING" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+                                         <NumericSpinner fx:id="autojudgetiming" editable="true" GridPane.columnIndex="4" GridPane.rowIndex="7">
+                                             <tooltip>
+                                                 <Tooltip text="%AUTO_JUDGE_TIMING" textAlignment="CENTER" />
+                                             </tooltip>
+                                             <valueFactory>
+                                                 <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="10" initialValue="0" max="99999" min="0" />
+                                             </valueFactory>
+                                         </NumericSpinner>
                                          <CheckBox fx:id="customjudge" mnemonicParsing="false" text="%EXPAND_JUDGE" GridPane.columnIndex="0" GridPane.rowIndex="9" />
                                          <HBox prefHeight="30.0" prefWidth="723.0" GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.columnSpan="3">
                                          <Label text="KEY PG" prefWidth="60.0"/>

@@ -166,6 +166,8 @@ public class PlayConfigurationView implements Initializable {
     @FXML
     private ComboBox<Integer> seventoninetype;
     @FXML
+    private Spinner<Integer> autojudgetiming;
+    @FXML
     private CheckBox guidese;
     @FXML
     private CheckBox windowhold;
@@ -576,6 +578,7 @@ public class PlayConfigurationView implements Initializable {
             conf.setHidden(getValue(hidden) / 1000f);
             conf.setJudgetype(JudgeAlgorithm.values()[judgealgorithm.getValue()].name());
             conf.setHispeedAutoAdjust(hispeedautoadjust.isSelected());
+            conf.setAutoJudgeTiming(getValue(autojudgetiming));
         }
         pc = playconfig.getValue();
         PlayConfig conf = player.getPlayConfig(Mode.valueOf(pc.name())).getPlayconfig();
@@ -594,6 +597,7 @@ public class PlayConfigurationView implements Initializable {
         hidden.getValueFactory().setValue((int) (conf.getHidden() * 1000));
         judgealgorithm.setValue(JudgeAlgorithm.getIndex(conf.getJudgetype()));
         hispeedautoadjust.setSelected(conf.isEnableHispeedAutoAdjust());
+        autojudgetiming.getValueFactory().setValue(conf.getAutoJudgeTiming());
     }
 
     private <T> T getValue(Spinner<T> spinner) {
