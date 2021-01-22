@@ -109,6 +109,12 @@ public class PortAudioDriver extends AbstractAudioDriver<PCM> implements Runnabl
 //		System.out.println( "  suggestedLatency = " + streamParameters.suggestedLatency );
 
 		int flags = 0;
+		if (!config.isAudioClipping()) {
+		        flags |= PortAudio.FLAG_CLIP_OFF;
+		}
+		if (!config.isAudioDithering()) {
+		        flags |= PortAudio.FLAG_DITHER_OFF;
+		}
 		
 		// Open a stream for output.
 		stream = PortAudio.openStream( null, streamParameters, sampleRate, framesPerBuffer, flags, config.isWASAPIExclusive() ? 1 : 0 );

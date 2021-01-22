@@ -31,6 +31,10 @@ public class AudioConfigurationView implements Initializable {
 	@FXML
 	private Spinner<Integer> audiosim;
 	@FXML
+	private CheckBox audioClipping;
+	@FXML
+	private CheckBox audioDithering;
+	@FXML
 	private Slider systemvolume;
 	@FXML
 	private Slider keyvolume;
@@ -70,6 +74,8 @@ public class AudioConfigurationView implements Initializable {
 		audiosim.getValueFactory().setValue(config.getAudioDeviceSimultaneousSources());
 		audioFreqOption.setValue(config.getAudioFreqOption());
 		audioFastForward.setValue(config.getAudioFastForward());
+		audioClipping.setSelected(config.isAudioClipping());
+		audioDithering.setSelected(config.isAudioDithering());
 		systemvolume.setValue((double)config.getSystemvolume());
 		keyvolume.setValue((double)config.getKeyvolume());
 		bgvolume.setValue((double)config.getBgvolume());
@@ -85,6 +91,8 @@ public class AudioConfigurationView implements Initializable {
 		config.setAudioDeviceSimultaneousSources(audiosim.getValue());
 		config.setAudioFreqOption(audioFreqOption.getValue());
 		config.setAudioFastForward(audioFastForward.getValue());
+		config.setAudioClipping(audioClipping.isSelected());
+		config.setAudioDithering(audioDithering.isSelected());
 		config.setSystemvolume((float) systemvolume.getValue());
 		config.setKeyvolume((float) keyvolume.getValue());
 		config.setBgvolume((float) bgvolume.getValue());

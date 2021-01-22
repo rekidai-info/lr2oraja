@@ -75,6 +75,14 @@ public class Config implements Validatable {
          * オーディオ同時発音数
          */
         private int audioDeviceSimultaneousSources = 128;
+        /**
+         * クリッピングモード
+         */
+        private boolean audioClipping = true;
+        /**
+         * ディザリングモード
+         */
+        private boolean audioDithering = true;
 
         /**
          * オーディオ再生速度変化の処理:なし
@@ -489,6 +497,22 @@ public class Config implements Validatable {
 
         public void setWASAPIExclusive(boolean wasapiExclusive) {
             	this.wasapiExclusive = wasapiExclusive;
+        }
+    
+        public boolean isAudioClipping() {
+        	return audioClipping;
+        }
+
+        public void setAudioClipping(boolean audioClipping) {
+        	this.audioClipping = audioClipping;
+        }
+
+        public boolean isAudioDithering() {
+        	return audioDithering;
+        }
+
+        public void setAudioDithering(boolean audioDithering) {
+        	this.audioDithering = audioDithering;
         }
     
         public int getAudioFreqOption() {
