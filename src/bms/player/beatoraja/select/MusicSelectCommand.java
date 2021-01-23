@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import bms.player.beatoraja.PlayConfig;
-import bms.player.beatoraja.PlayModeConfig;
 import bms.player.beatoraja.PlayerConfig;
 import bms.player.beatoraja.PlayerInformation;
 import bms.player.beatoraja.ir.IRChartData;
@@ -546,9 +545,7 @@ public enum MusicSelectCommand {
     DURATION_UP {
 		@Override
 		public void execute(MusicSelector selector) {
-	    final PlayerConfig config = selector.main.getPlayerConfig();
-	    PlayModeConfig pmc = config.getPlayConfig(config.getMode());
-	    PlayConfig pc = pmc.getPlayconfig();
+            PlayConfig pc = selector.getSelectedBarPlayConfig();
             if (pc != null && pc.getDuration() < 5000) {
                 pc.setDuration(pc.getDuration() + 1);
                 selector.play(SOUND_OPTIONCHANGE);
@@ -558,9 +555,7 @@ public enum MusicSelectCommand {
     DURATION_DOWN {
 		@Override
 		public void execute(MusicSelector selector) {
-	    final PlayerConfig config = selector.main.getPlayerConfig();
-	    PlayModeConfig pmc = config.getPlayConfig(config.getMode());
-	    PlayConfig pc = pmc.getPlayconfig();
+            PlayConfig pc = selector.getSelectedBarPlayConfig();
             if (pc != null && pc.getDuration() > 1) {
                 pc.setDuration(pc.getDuration() - 1);
                 selector.play(SOUND_OPTIONCHANGE);
@@ -570,9 +565,7 @@ public enum MusicSelectCommand {
     DURATION_UP_LARGE {
         @Override
         public void execute(MusicSelector selector) {
-	    final PlayerConfig config = selector.main.getPlayerConfig();
-	    PlayModeConfig pmc = config.getPlayConfig(config.getMode());
-	    PlayConfig pc = pmc.getPlayconfig();
+            PlayConfig pc = selector.getSelectedBarPlayConfig();
             if (pc != null && pc.getDuration() < 5000) {
                 int duration = pc.getDuration() + 10;
                 pc.setDuration(duration - duration % 10);
@@ -583,9 +576,7 @@ public enum MusicSelectCommand {
     DURATION_DOWN_LARGE {
         @Override
         public void execute(MusicSelector selector) {
-	    final PlayerConfig config = selector.main.getPlayerConfig();
-	    PlayModeConfig pmc = config.getPlayConfig(config.getMode());
-	    PlayConfig pc = pmc.getPlayconfig();
+            PlayConfig pc = selector.getSelectedBarPlayConfig();
             if (pc != null && pc.getDuration() > 10) {
                 int duration = pc.getDuration() - 10;
                 pc.setDuration(duration - duration % 10);
