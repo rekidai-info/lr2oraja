@@ -143,7 +143,7 @@ class KeyInputProccessor {
 		// TODO 判定処理スレッドはJudgeManagerに渡した方がいいかも
 
 		private final TimeLine[] timelines;
-		private boolean stop = false;
+		private volatile boolean stop = false;
 		/**
 		 * 自動入力するキー入力ログ
 		 */
@@ -203,6 +203,8 @@ class KeyInputProccessor {
 				}
 			}
 
+			judge.updateJudgetiming();
+			
 			if (keylog != null) {
 				Arrays.fill(input.getKeystate(), false);
 				Arrays.fill(input.getTime(), 0);
