@@ -10,6 +10,7 @@
 * WASAPI 共有/排他モードを追加
 * 判定自動調整機能を追加（LR2 の JUDGE AUTO ADJUST のような機能）
 * オーディオにクリッピング/ディザリングを ON/OFF する設定を追加
+* バックスラッシュをキーアサインできない不具合を修正
 
 なお、beatoraja を Java 15 以降のバージョンで起動する方法は以下を参照してください
 https://codoc.jp/sites/haaEBtTkhA/entries/rDDRUocsng
