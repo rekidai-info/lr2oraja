@@ -18,7 +18,7 @@ public class KeyBoardInputProcesseor extends BMSPlayerInputDevice implements Inp
 
     private int[] keys = new int[] { Keys.Z, Keys.S, Keys.X, Keys.D, Keys.C, Keys.F, Keys.V, Keys.SHIFT_LEFT,
             Keys.CONTROL_LEFT, Keys.COMMA, Keys.L, Keys.PERIOD, Keys.SEMICOLON, Keys.SLASH, Keys.APOSTROPHE,
-            Keys.BACKSLASH, Keys.SHIFT_RIGHT, Keys.CONTROL_RIGHT };
+            Keys.BACKSLASH, Keys.SHIFT_RIGHT, Keys.CONTROL_RIGHT, Keys.BUTTON_A };
     private int[] control = new int[] { Keys.Q, Keys.W };
     /**
      * 数字
@@ -68,6 +68,8 @@ public class KeyBoardInputProcesseor extends BMSPlayerInputDevice implements Inp
      * キーの最少入力感覚
      */
     private int duration;
+    
+    private boolean keyDownCalled = false;
 
     public KeyBoardInputProcesseor(BMSPlayerInputProcessor bmsPlayerInputProcessor, KeyboardConfig config, Resolution resolution) {
         super(bmsPlayerInputProcessor, Type.KEYBOARD);
@@ -89,12 +91,27 @@ public class KeyBoardInputProcesseor extends BMSPlayerInputDevice implements Inp
     }
 
     public boolean keyDown(int keycode) {
+	keyDownCalled = true;
         setLastPressedKey(keycode);
         return true;
     }
 
-    public boolean keyTyped(char keycode) {
-        return false;
+    public boolean keyTyped(char keyTyped) {
+	try {
+            if (keyTyped == '\\') {
+                if (keyDownCalled) {
+            	    setLastPressedKey(Keys.BACKSLASH);
+                } else {
+                    setLastPressedKey(Keys.BUTTON_A);
+                }
+                
+                return true;
+            } else {
+                return false;
+            }
+	} finally {
+	    keyDownCalled = false;
+	}
     }
 
     public boolean keyUp(int keycode) {
