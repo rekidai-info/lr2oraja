@@ -21,7 +21,7 @@ public class IRConnectionManager {
         /**
          * 検出されたIRConnection
          */
-        private static Class<IRConnection>[] irconnections = new Class[0];
+        private static Class<IRConnection>[] irconnections;
 
 
         /**

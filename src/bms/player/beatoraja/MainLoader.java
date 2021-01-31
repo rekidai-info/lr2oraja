@@ -98,7 +98,7 @@ public class MainLoader extends Application {
                 }
 
                 if(Files.exists(MainController.configpath) && (bmsPath != null || auto != null)) {
-                        // IRConnectionManager.getAllAvailableIRConnectionName();
+                        IRConnectionManager.getAllAvailableIRConnectionName();
                         play(bmsPath, auto, true, null, null, bmsPath != null);
                 } else {
                         launch(args);
@@ -319,7 +319,7 @@ public class MainLoader extends Application {
         private static class NullVersionChecker implements VersionChecker {
             @Override
             public String getMessage() {
-                return "Version Unknown";
+                return "Latest version unknown";
             }
 
             @Override

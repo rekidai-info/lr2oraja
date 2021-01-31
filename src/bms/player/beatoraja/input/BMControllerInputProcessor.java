@@ -89,7 +89,7 @@ public class BMControllerInputProcessor extends BMSPlayerInputDevice {
 		this.setConfig(controllerConfig);
 	}
 
-	public void setConfig(ControllerConfig controllerConfig) {
+	public synchronized void setConfig(ControllerConfig controllerConfig) {
 		this.buttons = controllerConfig.getKeyAssign().clone();
 		this.start = controllerConfig.getStart();
 		this.select = controllerConfig.getSelect();
@@ -123,7 +123,7 @@ public class BMControllerInputProcessor extends BMSPlayerInputDevice {
 		lastPressedButton = -1;
 	}
 
-	public void poll(final long presstime) {
+	public synchronized void poll(final long presstime) {
 		// AXISの更新
 		for (int i = 0; i < 4; i++) {
 			axis[i] = controller.getAxis(i);
