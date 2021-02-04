@@ -6,7 +6,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.dbutils.handlers.ArrayHandler;
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteDataSource;
 
@@ -292,5 +295,22 @@ public class ScoreDatabaseAccessor extends SQLiteDatabaseAccessor {
 	public interface ScoreDataCollector {
 		
 		public void collect(SongData hash, ScoreData score);
+	}
+	
+	public int getMaxLastUpdate() throws SQLException {
+	    	// SQLite does not support Stored Procedures Query: SELECT MAX(date) FROM score Parameters: [] :(
+	    	int maxValue = -1;
+	    	
+		for (final Object object : qr.query("SELECT date FROM score", new ArrayHandler())) {
+		    if (object == null) {
+			continue;
+		    }
+		    
+		    final int value = Integer.class.cast(object).intValue();
+		    
+		    maxValue = Math.max(maxValue, value);
+		}
+		
+		return maxValue;
 	}
 }

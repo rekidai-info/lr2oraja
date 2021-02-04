@@ -401,6 +401,10 @@ public class MusicSelector extends MainState {
 					irc = new RankingData();
 		            ircache.put(song, config.getLnmode(), irc);
 				}
+				if(main.getIRStatus().length > 0) {
+				    	final ScoreData scoreData = scorecache.readScoreData(song, config.getLnmode());
+				    	main.getIRStatus()[0].connection.setTargetScoreData(scoreData == null ? null : new IRScoreData(scoreData));
+				}
 				irc.load(this, song);
 	            currentir = irc;
 			}				

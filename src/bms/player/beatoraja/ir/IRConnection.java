@@ -1,5 +1,7 @@
 package bms.player.beatoraja.ir;
 
+import bms.player.beatoraja.ScoreData;
+
 /**
  * IR接続用インターフェイス
  * 
@@ -107,5 +109,14 @@ public interface IRConnection {
 	 * @return
 	 */
 	public String getPlayerURL(IRPlayerData player);
+	
+	/**
+	 * IRが曲の順位（自分の順位/全体のプレイヤー数）を計算する際に計算するもととなる自身のスコアデータを設定する
+	 * 
+	 * @param score
+	 *            自身のスコア。このスコアとIR上の各プレイヤーのスコアをもとに自身の順位を全体のプレイヤー数を計算できるようにする
+	 */
+	default void setTargetScoreData(IRScoreData score) {
+	}
 
 }
