@@ -94,6 +94,11 @@ public abstract class ScoreDataCache {
         ScoreData score = readScoreDatasFromSource(song, lnmode);
         scorecache[cacheindex].put(song.getSha256(), score);
     }
+    
+    public void remove(SongData song, int lnmode) {
+        final int cacheindex = song.hasUndefinedLongNote() ? lnmode : 3;
+        scorecache[cacheindex].remove(song.getSha256());
+    }
 
     protected abstract ScoreData readScoreDatasFromSource(SongData songs, int lnmode);
 

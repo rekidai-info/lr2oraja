@@ -1,8 +1,14 @@
 package bms.player.beatoraja.select;
 
+import bms.player.beatoraja.Config;
+import bms.player.beatoraja.PlayerConfig;
 import bms.player.beatoraja.Resolution;
+import bms.player.beatoraja.ScoreDatabaseAccessor;
 import bms.player.beatoraja.select.bar.SearchWordBar;
+import bms.player.beatoraja.select.bar.SongBar;
+import bms.player.beatoraja.song.SongData;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import com.badlogic.gdx.Gdx;
@@ -69,21 +75,48 @@ public class SearchTextField extends Stage {
 					if (key == '\n' || key == 13) {
 						boolean searched = false;
 						if (textField.getText().length() > 0) {
-							SearchWordBar swb = new SearchWordBar(selector, textField.getText());
-							int count = swb.getChildren().length;
-							if (count > 0) {
-								selector.getBarRender().addSearch(swb);
-								selector.getBarRender().updateBar(null);
-								selector.getBarRender().setSelected(swb);
-								textField.setText("");
-								textField.setMessageText(count + " song(s) found");
-								textFieldStyle.messageFontColor = Color.valueOf("00c0c0");
-								searched = true;
-							} else {
-								textField.setText("");
-								textField.setMessageText("no song found");
-								textFieldStyle.messageFontColor = Color.DARK_GRAY;
-							}
+						    if ("/deletescore".equals(textField.getText())) {
+						        if (selector.getSelectedBar() instanceof SongBar) {
+						            final SongBar songBar = SongBar.class.cast(selector.getSelectedBar());
+						            final SongData songData = songBar.getSongData();
+						            final Config config = selector.main.getConfig();
+						            final PlayerConfig playerConfig = selector.main.getPlayerResource().getPlayerConfig();
+						            
+						            try {
+						                final ScoreDatabaseAccessor scoredb = new ScoreDatabaseAccessor(config.getPlayerpath() + File.separatorChar + config.getPlayername() + File.separatorChar + "score.db");
+						                
+						                selector.getScoreDataCache().remove(songData, songData.hasAnyLongNote() ? playerConfig.getLnmode() : 0);
+						                scoredb.deleteScoreData(songData.getSha256(), songData.hasAnyLongNote() ? playerConfig.getLnmode() : 0);
+
+						                selector.main.getMessageRenderer().addMessage("Score deleted", 3000, Color.GREEN, 1);
+						                
+						                textField.setText("");
+	                                    textField.setMessageText("score deleted");
+	                                    textFieldStyle.messageFontColor = Color.DARK_GRAY;
+
+	                                    selector.getBarRender().updateBar(songBar);
+						            } catch (final Exception e) {
+						                e.printStackTrace();
+						                Logger.getGlobal().warning("スコア削除失敗。" + e.getLocalizedMessage());
+						            }
+						        }
+						    } else {
+    							SearchWordBar swb = new SearchWordBar(selector, textField.getText());
+    							int count = swb.getChildren().length;
+    							if (count > 0) {
+    								selector.getBarRender().addSearch(swb);
+    								selector.getBarRender().updateBar(null);
+    								selector.getBarRender().setSelected(swb);
+    								textField.setText("");
+    								textField.setMessageText(count + " song(s) found");
+    								textFieldStyle.messageFontColor = Color.valueOf("00c0c0");
+    								searched = true;
+    							} else {
+    								textField.setText("");
+    								textField.setMessageText("no song found");
+    								textFieldStyle.messageFontColor = Color.DARK_GRAY;
+    							}
+						    }
 						}
 						if (!searched) {
 							// Enter入力がTextFieldとInputProcessorで2回発生するので、後者のEnter入力を一時的にロックする
