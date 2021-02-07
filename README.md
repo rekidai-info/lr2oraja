@@ -11,7 +11,9 @@
 * 判定自動調整機能を追加（LR2 の JUDGE AUTO ADJUST のような機能）
 * オーディオにクリッピング/ディザリングを ON/OFF する設定を追加
 * バックスラッシュをキーアサインできない不具合を修正
-* LR2IR Read Only(https://github.com/rekidai-info/LR2IR-Read-Only) に対応
+* LR2IR Read Only(https://github.com/rekidai-info/LR2IR-Read-Only) に対応（ランキング/ライバル機能）
+* /deletescore を実装
+* プラクティスモードに RANDOM の配置指定機能を追加
 
 なお、beatoraja を Java 15 以降のバージョンで起動する方法は以下を参照してください
 https://codoc.jp/sites/haaEBtTkhA/entries/rDDRUocsng
