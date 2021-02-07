@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import bms.model.BMSModel;
 import bms.model.LongNote;
@@ -27,10 +28,37 @@ public class LaneShuffleModifier extends PatternModifier {
 	 * ランダムのタイプ
 	 */
 	private Random type;
+	/**
+     * ランダムの並び順（例：2461357）
+     * プラクティスモードで RANDOM 指定時に　randomOrder　の順番に並び替える
+     * 例えば randomOrder が 1234567 の場合正規と同じになる
+     */
+	List<String> randomOrder;
 
 	public LaneShuffleModifier(Random type) {
 		this.type = type;
 	}
+	
+	public LaneShuffleModifier(Random type, List<String> randomOrder) {
+        this.type = type;
+        
+        if (randomOrder == null || randomOrder.size() != 7) {
+            if (randomOrder != null) {
+                Logger.getGlobal().warning("指定された RANDOM のソート順に誤りがあります：" + String.join("", randomOrder));
+            }
+            
+            this.randomOrder = null;
+        } else {
+            final String sorted = randomOrder.stream().sorted().collect(Collectors.joining(""));
+            
+            if ("1234567".equals(sorted)) {
+                this.randomOrder = randomOrder;
+            } else {
+                Logger.getGlobal().warning("指定された RANDOM のソート順に誤りがあります：" + String.join("", randomOrder));
+                this.randomOrder = null;
+            }
+        }
+    }
 
 	private void makeRandom(BMSModel model) {
 		Mode mode = model.getMode();
@@ -46,7 +74,7 @@ public class LaneShuffleModifier extends PatternModifier {
 			break;
 		case RANDOM:
 			keys = getKeys(mode, false);
-			random = keys.length > 0 ? shuffle(keys) : keys;
+			random = keys.length > 0 ? shuffle(keys, randomOrder) : keys;
 			break;
 		case CROSS:
 			keys = getKeys(mode, false);
@@ -63,7 +91,7 @@ public class LaneShuffleModifier extends PatternModifier {
 			if(mode == Mode.POPN_9K) {
 				random = keys.length > 0 ? noMurioshiLaneShuffle(model) : keys;
 			} else { 
-				random = keys.length > 0 ? shuffle(keys) : keys;
+				random = keys.length > 0 ? shuffle(keys, null) : keys;
 				setAssistLevel(AssistLevel.LIGHT_ASSIST);
 			}
 			break;

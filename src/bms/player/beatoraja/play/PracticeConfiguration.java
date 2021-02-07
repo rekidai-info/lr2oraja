@@ -2,6 +2,10 @@ package bms.player.beatoraja.play;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import bms.model.BMSModel;
 import bms.model.Mode;
@@ -13,6 +17,7 @@ import bms.player.beatoraja.skin.SkinNoteDistributionGraph;
 import bms.player.beatoraja.skin.Skin.SkinObjectRenderer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -32,6 +37,7 @@ public class PracticeConfiguration {
 
 	private int cursorpos = 0;
 	private long presscount = 0;
+	private long numpresscount = 0;
 
 	private BMSModel model;
 
@@ -115,7 +121,7 @@ public class PracticeConfiguration {
 	}
 
 	public void processInput(BMSPlayerInputProcessor input) {
-		final int values = model.getMode().player == 2 ? 12 : 10;
+		final int values = model.getMode().player == 2 ? 14 : 11;
 		boolean[] cursor = input.getCursorState();
 		long[] cursortime = input.getCursorTime();
 		if (cursor[0] && cursortime[0] != 0) {
@@ -183,14 +189,20 @@ public class PracticeConfiguration {
 			case 8:
 				property.graphtype = (property.graphtype + 2) % 3;
 				break;
-			case 9:
+			case 10:
 				property.random = (property.random + (model.getMode() == Mode.POPN_5K || model.getMode() == Mode.POPN_9K ? 6 : 9))
 						% (model.getMode() == Mode.POPN_5K || model.getMode() == Mode.POPN_9K ? 7 : 10);
+				if (property.random != 2) {
+				    property.randomOrder1 = Stream.of("-", "-", "-", "-", "-", "-", "-").collect(Collectors.toCollection(ArrayList::new));
+				}
 				break;
-			case 10:
+			case 12:
 				property.random2 = (property.random2 + 9) % 10;
+				if (property.random2 != 2) {
+                    property.randomOrder2 = Stream.of("-", "-", "-", "-", "-", "-", "-").collect(Collectors.toCollection(ArrayList::new));
+                }
 				break;
-			case 11:
+			case 13:
 				property.doubleop = (property.doubleop + 1) % 2;
 				break;
 			}
@@ -254,13 +266,19 @@ public class PracticeConfiguration {
 			case 8:
 				property.graphtype = (property.graphtype + 1) % 3;
 				break;
-			case 9:
-				property.random = (property.random + 1) % (model.getMode() == Mode.POPN_5K || model.getMode() == Mode.POPN_9K ? 7 : 10);
-				break;
 			case 10:
-				property.random2 = (property.random2 + 1) % 10;
+				property.random = (property.random + 1) % (model.getMode() == Mode.POPN_5K || model.getMode() == Mode.POPN_9K ? 7 : 10);
+				if (property.random != 2) {
+                    property.randomOrder1 = Stream.of("-", "-", "-", "-", "-", "-", "-").collect(Collectors.toCollection(ArrayList::new));
+                }
 				break;
-			case 11:
+			case 12:
+				property.random2 = (property.random2 + 1) % 10;
+				if (property.random2 != 2) {
+                    property.randomOrder2 = Stream.of("-", "-", "-", "-", "-", "-", "-").collect(Collectors.toCollection(ArrayList::new));
+                }
+				break;
+			case 13:
 				property.doubleop = (property.doubleop + 1) % 2;
 				break;
 
@@ -268,11 +286,40 @@ public class PracticeConfiguration {
 		} else if (!(cursor[2] || cursor[3])) {
 			presscount = 0;
 		}
+		
+		if ((cursorpos == 9 || cursorpos == 11) && numpresscount < System.currentTimeMillis()) {
+		    numpresscount = System.currentTimeMillis() + 200;
+		    final List<String> randomOrder = cursorpos == 9 ? property.randomOrder1 : property.randomOrder2;
+
+            for (int i = 1; i <= 7; ++i) {
+                if (input.getNumberState()[i]) {
+                    if (randomOrder.size() < 7) {
+                        randomOrder.add(String.valueOf(i));
+                    } else {
+                        randomOrder.remove(0);
+                        randomOrder.add(String.valueOf(i));
+                    }
+                    
+                    if (cursorpos == 9) {
+                        property.random = 2;
+                    } else {
+                        property.random2 = 2;
+                    }
+                    
+                    break;
+                }
+            }
+            if (Gdx.input.isKeyPressed(Keys.BACKSPACE) || Gdx.input.isKeyPressed(Keys.FORWARD_DEL)) {
+                if (!randomOrder.isEmpty()) {
+                    randomOrder.remove(randomOrder.size() - 1);
+                }
+            }
+        }
 	}
 
 	public void draw(Rectangle r, SkinObjectRenderer sprite, long time, MainState state) {
 		float x = r.x + r.width / 8;
-		float y = r.y + r.height * 7 / 8;
+		float y = model.getMode().player == 2 ? r.y + r.height : r.y + r.height + 7 / 8;
 		sprite.draw(titlefont, String.format("START TIME : %2d:%02d.%1d", property.starttime / 60000,
 				(property.starttime / 1000) % 60, (property.starttime / 100) % 10), x, y, cursorpos == 0 ? Color.YELLOW : Color.CYAN);
 		sprite.draw(titlefont, String.format("END TIME : %2d:%02d.%1d", property.endtime / 60000,
@@ -284,10 +331,12 @@ public class PracticeConfiguration {
 		sprite.draw(titlefont, "TOTAL : " + (int)property.total, x, y - 132, cursorpos == 6 ? Color.YELLOW : Color.CYAN);
 		sprite.draw(titlefont, "FREQUENCY : " + property.freq, x, y - 154, cursorpos == 7 ? Color.YELLOW : Color.CYAN);
 		sprite.draw(titlefont, "GRAPHTYPE : " + GRAPHTYPE[property.graphtype], x, y - 176, cursorpos == 8 ? Color.YELLOW : Color.CYAN);
-		sprite.draw(titlefont, "OPTION-1P : " + RANDOM[property.random], x, y - 198, cursorpos == 9 ? Color.YELLOW : Color.CYAN);
+		sprite.draw(titlefont, "RANDOM ORDER-1P : " + String.join("", property.randomOrder1), x, y - 198, cursorpos == 9 ? Color.YELLOW : Color.CYAN);
+		sprite.draw(titlefont, "OPTION-1P : " + RANDOM[property.random], x, y - 220, cursorpos == 10 ? Color.YELLOW : Color.CYAN);
 		if (model.getMode().player == 2) {
-			sprite.draw(titlefont, "OPTION-2P : " + RANDOM[property.random2], x, y - 220, cursorpos == 10 ? Color.YELLOW : Color.CYAN);
-			sprite.draw(titlefont, "OPTION-DP : " + DPRANDOM[property.doubleop], x, y - 242, cursorpos == 11 ? Color.YELLOW : Color.CYAN);
+		    sprite.draw(titlefont, "RANDOM ORDER-2P : " + String.join("", property.randomOrder2), x, y - 242, cursorpos == 11 ? Color.YELLOW : Color.CYAN);
+			sprite.draw(titlefont, "OPTION-2P : " + RANDOM[property.random2], x, y - 264, cursorpos == 12 ? Color.YELLOW : Color.CYAN);
+			sprite.draw(titlefont, "OPTION-DP : " + DPRANDOM[property.doubleop], x, y - 286, cursorpos == 13 ? Color.YELLOW : Color.CYAN);
 		}
 
 		if (state.main.getPlayerResource().mediaLoadFinished()) {
@@ -314,6 +363,8 @@ public class PracticeConfiguration {
 		public GaugeProperty gaugecategory;
 		public int gaugetype = 2;
 		public int startgauge = 20;
+		public List<String> randomOrder1 = Stream.of("-", "-", "-", "-", "-", "-", "-").collect(Collectors.toCollection(ArrayList::new));
+		public List<String> randomOrder2 = Stream.of("-", "-", "-", "-", "-", "-", "-").collect(Collectors.toCollection(ArrayList::new));
 		public int random = 0;
 		public int random2 = 0;
 		public int doubleop = 0;

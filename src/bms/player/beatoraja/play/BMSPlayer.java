@@ -503,9 +503,9 @@ public class BMSPlayer extends MainState {
                                         if (property.doubleop == 1) {
                                                 new LaneShuffleModifier(Random.FLIP).modify(model);
                                         }
-                                        PatternModifier.create(property.random2, PatternModifier.SIDE_2P, model.getMode(), config).modify(model);
+                                        PatternModifier.create(property.random2, property.randomOrder2, PatternModifier.SIDE_2P, model.getMode(), config).modify(model);
                                 }
-                                PatternModifier.create(property.random, PatternModifier.SIDE_1P, model.getMode(), config).modify(model);
+                                PatternModifier.create(property.random, property.randomOrder1, PatternModifier.SIDE_1P, model.getMode(), config).modify(model);
 
                                 gauge = practice.getGauge(model);
                                 model.setJudgerank(property.judgerank);

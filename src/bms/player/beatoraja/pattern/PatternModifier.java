@@ -147,6 +147,10 @@ public abstract class PatternModifier {
     public static PatternModifier create(int id, int side, Mode mode, PlayerConfig config) {
         return create(id, side, mode, config, null);
     }
+    
+    public static PatternModifier create(int id, List<String> randomOrder, int side, Mode mode, PlayerConfig config) {
+        return create(id, randomOrder, side, mode, config, null);
+    }
 
     /**
      *
@@ -157,6 +161,10 @@ public abstract class PatternModifier {
      * @return
      */
     public static PatternModifier create(int id, int side, Mode mode, PlayerConfig config, int[] seed) {
+        return create(id, null, side, mode, config, seed);
+    }
+    
+    public static PatternModifier create(int id, List<String> randomOrder, int side, Mode mode, PlayerConfig config, int[] seed) {
 		PatternModifier pm = null;
 		Random r = Random.getRandom(id);
 		switch (r) {
@@ -164,11 +172,13 @@ public abstract class PatternModifier {
 			pm = new DummyModifier();
 			break;
 			case MIRROR:
-			case RANDOM:
 			case R_RANDOM:
 			case RANDOM_EX:
 			case CROSS:
 			pm = new LaneShuffleModifier(r);
+			break;
+			case RANDOM:
+			pm = new LaneShuffleModifier(r, randomOrder);
 			break;
 			case S_RANDOM:
 			case SPIRAL:
@@ -212,7 +222,7 @@ public abstract class PatternModifier {
 		}
 	}
 
-	protected static int[] shuffle(int[] keys) {
+	protected static int[] shuffle(int[] keys, List<String> randomOrder) {
 		List<Integer> l = new ArrayList<Integer>(keys.length);
 		for (int key : keys) {
 			l.add(key);
@@ -226,9 +236,14 @@ public abstract class PatternModifier {
 			result[i] = i;
 		}
 		for (int lane = 0; lane < keys.length; lane++) {
-			int r = (int) (Math.random() * l.size());
-			result[keys[lane]] = l.get(r);
-			l.remove(r);
+			if (randomOrder != null && keys.length == randomOrder.size()) {
+			    int r = Integer.parseInt(randomOrder.get(lane)) - 1;
+			    result[keys[lane]] = l.get(r);
+			} else {
+			    int r = (int) (Math.random() * l.size());
+			    result[keys[lane]] = l.get(r);
+	            l.remove(r);
+			}
 		}
 
 		return result;
