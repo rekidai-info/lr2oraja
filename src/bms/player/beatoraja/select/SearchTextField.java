@@ -1,9 +1,13 @@
 package bms.player.beatoraja.select;
 
 import bms.player.beatoraja.Config;
+import bms.player.beatoraja.CourseData;
+import bms.player.beatoraja.PlayDataAccessor;
 import bms.player.beatoraja.PlayerConfig;
 import bms.player.beatoraja.Resolution;
 import bms.player.beatoraja.ScoreDatabaseAccessor;
+import bms.player.beatoraja.select.bar.Bar;
+import bms.player.beatoraja.select.bar.GradeBar;
 import bms.player.beatoraja.select.bar.SearchWordBar;
 import bms.player.beatoraja.select.bar.SongBar;
 import bms.player.beatoraja.song.SongData;
@@ -76,29 +80,53 @@ public class SearchTextField extends Stage {
 						boolean searched = false;
 						if (textField.getText().length() > 0) {
 						    if ("/deletescore".equals(textField.getText())) {
-						        if (selector.getSelectedBar() instanceof SongBar) {
-						            final SongBar songBar = SongBar.class.cast(selector.getSelectedBar());
-						            final SongData songData = songBar.getSongData();
-						            final Config config = selector.main.getConfig();
-						            final PlayerConfig playerConfig = selector.main.getPlayerResource().getPlayerConfig();
-						            
-						            try {
-						                final ScoreDatabaseAccessor scoredb = new ScoreDatabaseAccessor(config.getPlayerpath() + File.separatorChar + config.getPlayername() + File.separatorChar + "score.db");
-						                
-						                selector.getScoreDataCache().remove(songData, songData.hasAnyLongNote() ? playerConfig.getLnmode() : 0);
-						                scoredb.deleteScoreData(songData.getSha256(), songData.hasAnyLongNote() ? playerConfig.getLnmode() : 0);
+						        if (selector.getSelectedBar() instanceof SongBar || selector.getSelectedBar() instanceof GradeBar) {
+						            final Bar bar = selector.getSelectedBar();
+	                                final Config config = selector.main.getConfig();
+	                                final PlayerConfig playerConfig = selector.main.getPlayerResource().getPlayerConfig();
 
-						                selector.main.getMessageRenderer().addMessage("Score deleted", 3000, Color.GREEN, 1);
-						                
-						                textField.setText("");
-	                                    textField.setMessageText("score deleted");
-	                                    textFieldStyle.messageFontColor = Color.DARK_GRAY;
+	                                try {
+    						            if (selector.getSelectedBar() instanceof SongBar) {
+    						                final ScoreDatabaseAccessor scoredb = new ScoreDatabaseAccessor(config.getPlayerpath() + File.separatorChar + config.getPlayername() + File.separatorChar + "score.db");
+    						                final SongBar songBar = SongBar.class.cast(selector.getSelectedBar());
+    						                final SongData songData = songBar.getSongData();
+    						                
+    						                selector.getScoreDataCache().remove(songData, songData.hasAnyLongNote() ? playerConfig.getLnmode() : 0);
+                                            scoredb.deleteScoreData(songData.getSha256(), songData.hasAnyLongNote() ? playerConfig.getLnmode() : 0);
+    						            } else if (selector.getSelectedBar() instanceof GradeBar) {
+    						                final GradeBar gradeBar = GradeBar.class.cast(selector.getSelectedBar());
+    						                
+    						                if (gradeBar.getSongDatas() != null) {
+        						                final CourseData courseData = gradeBar.getCourseData();
+        						                final PlayDataAccessor playDataAccessor = selector.main.getPlayDataAccessor();
+        					                    final String[] hash = new String[gradeBar.getSongDatas().length];
+        					                    boolean ln = false;
+        					                    for (int i = 0; i < gradeBar.getSongDatas().length; i++) {
+        					                        hash[i] = gradeBar.getSongDatas()[i].getSha256();
+        					                        ln |= gradeBar.getSongDatas()[i].hasUndefinedLongNote();
+        					                    }
 
-	                                    selector.getBarRender().updateBar(songBar);
-						            } catch (final Exception e) {
-						                e.printStackTrace();
-						                Logger.getGlobal().warning("スコア削除失敗。" + e.getLocalizedMessage());
-						            }
+        						                playDataAccessor.deleteScoreData(hash, ln, playerConfig.getLnmode(), 0, courseData.getConstraint());
+        						                playDataAccessor.deleteScoreData(hash, ln, playerConfig.getLnmode(), 1, courseData.getConstraint());
+        						                playDataAccessor.deleteScoreData(hash, ln, playerConfig.getLnmode(), 2, courseData.getConstraint());
+    						                }
+    						            }
+    						            
+                                        selector.main.getMessageRenderer().addMessage("Score deleted", 3000, Color.GREEN, 1);
+                                        
+                                        textField.setText("");
+                                        textField.setMessageText("score deleted");
+                                        textFieldStyle.messageFontColor = Color.DARK_GRAY;
+
+                                        selector.getBarRender().updateBar(bar);
+	                                } catch (final Exception e) {
+                                        e.printStackTrace();
+                                        Logger.getGlobal().warning("スコア削除失敗。" + e.getLocalizedMessage());
+                                    }
+						        } else {
+						            textField.setText("");
+                                    textField.setMessageText("");
+                                    textFieldStyle.messageFontColor = Color.DARK_GRAY;
 						        }
 						    } else {
     							SearchWordBar swb = new SearchWordBar(selector, textField.getText());

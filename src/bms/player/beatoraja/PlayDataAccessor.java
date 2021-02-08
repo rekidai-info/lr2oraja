@@ -482,6 +482,53 @@ public class PlayDataAccessor {
 	public void deleteScoreData(BMSModel model, int lnmode) {
 		scoredb.deleteScoreData(model.getSHA256(), model.containsUndefinedLongNote() ? lnmode : 0);
 	}
+	
+	public void deleteScoreData(String[] hashes, boolean ln, int lnmode, int option,
+            CourseData.CourseDataConstraint[] constraint) {
+        String hash = "";
+        for (String s : hashes) {
+            hash += s;
+        }
+        deleteScoreData(hash, ln, lnmode, option, constraint);
+    }
+	
+	public void deleteScoreData(String hash, boolean ln, int lnmode, int option,
+            CourseData.CourseDataConstraint[] constraint) {
+        int hispeed = 0;
+        int judge = 0;
+        int gauge = 0;
+        for (CourseData.CourseDataConstraint c : constraint) {
+            switch(c) {
+            case NO_SPEED:
+                hispeed = 1;
+                break;
+            case NO_GOOD:
+                judge = 1;
+                break;
+            case NO_GREAT:
+                judge = 2;
+                break;
+            case GAUGE_LR2:
+                gauge = 1;
+                break;
+            case GAUGE_5KEYS:
+                gauge = 2;
+                break;
+            case GAUGE_7KEYS:
+                gauge = 3;
+                break;
+            case GAUGE_9KEYS:
+                gauge = 4;
+                break;
+            case GAUGE_24KEYS:
+                gauge = 5;
+                break;
+            default:
+                break;
+            }
+        }
+        scoredb.deleteScoreData(hash, (ln ? lnmode : 0) + option * 10 + hispeed * 100 + judge * 1000 + gauge * 10000);
+    }
 
 	public boolean existsReplayData(BMSModel model, int lnmode, int index) {
 		boolean ln = model.containsUndefinedLongNote();
