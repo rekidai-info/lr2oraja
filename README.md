@@ -14,7 +14,7 @@
 * LR2IR Read Only(https://github.com/rekidai-info/LR2IR-Read-Only) に対応（ランキング/ライバル機能）
 * /deletescore を実装
 * プラクティスモードに RANDOM の配置指定機能を追加
-* クイックリトライを追加（プレイ中に effect ボタン(=キーボードでの E, 専コンでの E3 でランダム再配置でクイックリトライ、キーボードでの R, 専コンでの E4 で同じ配置でクイックリトライ）
+* プレイ中に effect ボタン（専コンでの E3 ボタン）、またはキーボードでの E キー長押しでランダム再配置でクイックリトライ、VEFX ボタン（専コンでの E4 ボタン）、またはキーボードでの R キー長押しで同じ配置でクイックリトライします
 
 なお、beatoraja を Java 15 以降のバージョンで起動する方法は以下を参照してください
 https://codoc.jp/sites/haaEBtTkhA/entries/rDDRUocsng
