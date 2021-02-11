@@ -84,6 +84,12 @@ public class MidiInputProcessor extends BMSPlayerInputDevice implements AutoClos
 		setHandler(config.getSelect(), (Boolean pressed) -> {
 			bmsPlayerInputProcessor.setSelectPressed(pressed);
 		});
+		setHandler(config.getEffect(), (Boolean pressed) -> {
+            bmsPlayerInputProcessor.setEffectPressed(pressed);
+        });
+        setHandler(config.getVEFX(), (Boolean pressed) -> {
+            bmsPlayerInputProcessor.setVEFXPressed(pressed);
+        });
 	}
 
 	public void setStartTime(long starttime) {

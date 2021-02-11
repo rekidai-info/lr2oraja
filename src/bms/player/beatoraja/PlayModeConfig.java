@@ -153,6 +153,10 @@ public class PlayModeConfig {
         private int start;
 
         private int select;
+        
+        private int effect;
+
+        private int vefx;
 
         private int duration = 16;
 
@@ -169,6 +173,14 @@ public class PlayModeConfig {
             this.start = start;
             this.select = select;
         }
+        
+        public KeyboardConfig(int[] keys, int start, int select, int effect, int vefx) {
+            this.keys = keys;
+            this.start = start;
+            this.select = select;
+            this.effect = effect;
+            this.vefx = vefx;
+        }
 
         public int[] getKeyAssign() {
             return keys;
@@ -180,6 +192,14 @@ public class PlayModeConfig {
 
         public int getSelect() {
             return select;
+        }
+        
+        public int getEffect() {
+            return effect;
+        }
+
+        public int getVEFX() {
+            return vefx;
         }
 
         public void setKeyAssign(Mode mode, boolean enable) {
@@ -224,6 +244,8 @@ public class PlayModeConfig {
             }
             start = Keys.Q;
             select = Keys.W;
+            effect = Keys.E;
+            vefx = Keys.R;
         }
 
         public void setKeyAssign(int[] keys) {
@@ -236,6 +258,14 @@ public class PlayModeConfig {
 
         public void setSelect(int select) {
             this.select = select;
+        }
+        
+        public void setEffect(int effect) {
+            this.effect = effect;
+        }
+
+        public void setVEFX(int vefx) {
+            this.vefx = vefx;
         }
 
         public int getDuration() {
@@ -266,6 +296,10 @@ public class PlayModeConfig {
 
         private int select;
 
+        private int effect;
+
+        private int vefx;
+        
         private int duration = 16;
         /**
          * JKOC Hack (boolean) private variable
@@ -305,6 +339,14 @@ public class PlayModeConfig {
             this.start = start;
             this.select = select;
         }
+        
+        public ControllerConfig(int[] keys, int start, int select, int effect, int vefx) {
+            this.keys = keys;
+            this.start = start;
+            this.select = select;
+            this.effect = effect;
+            this.vefx = vefx;
+        }
 
         public String getName() {
             return name;
@@ -324,6 +366,14 @@ public class PlayModeConfig {
 
         public int getSelect() {
             return select;
+        }
+        
+        public int getEffect() {
+            return effect;
+        }
+
+        public int getVEFX() {
+            return vefx;
         }
 
         public void setKeyAssign(Mode mode, int player, boolean enable) {
@@ -394,6 +444,8 @@ public class PlayModeConfig {
             }
             start = BMKeys.BUTTON_9;
             select = BMKeys.BUTTON_10;
+            effect = BMKeys.BUTTON_11;
+            vefx = BMKeys.BUTTON_12;
         }
 
         public void setKeyAssign(int[] keys) {
@@ -406,6 +458,14 @@ public class PlayModeConfig {
 
         public void setSelect(int select) {
             this.select = select;
+        }
+        
+        public void setEffect(int effect) {
+            this.effect = effect;
+        }
+
+        public void setVEFX(int vefx) {
+            this.vefx = vefx;
         }
 
         public int getDuration() {
@@ -510,6 +570,8 @@ public class PlayModeConfig {
         private Input[] keys;
         private Input start;
         private Input select;
+        private Input effect;
+        private Input vefx;
 
         public Input[] getKeys() {
             return keys;
@@ -526,6 +588,14 @@ public class PlayModeConfig {
         public Input getSelect() {
             return select;
         }
+        
+        public Input getEffect() {
+            return effect;
+        }
+
+        public Input getVEFX() {
+            return vefx;
+        }
 
         public void setStart(Input input) {
             start = input;
@@ -533,6 +603,14 @@ public class PlayModeConfig {
 
         public void setSelect(Input input) {
             select = input;
+        }
+        
+        public void setEffect(Input input) {
+            effect = input;
+        }
+
+        public void setVEFX(Input input) {
+            vefx = input;
         }
 
         public MidiConfig() {
@@ -559,6 +637,8 @@ public class PlayModeConfig {
                     keys[6] = new Input(Input.Type.NOTE, 51);
                     start = new Input(Input.Type.NOTE, 47);
                     select = new Input(Input.Type.NOTE, 48);
+                    effect = new Input(Input.Type.NOTE, 49);
+                    vefx = new Input(Input.Type.NOTE, 50);
                     break;
                 case BEAT_7K:
                 default:
@@ -571,6 +651,8 @@ public class PlayModeConfig {
                     keys[8] = new Input(Input.Type.NOTE, 51);
                     start = new Input(Input.Type.NOTE, 47);
                     select = new Input(Input.Type.NOTE, 48);
+                    effect = new Input(Input.Type.NOTE, 49);
+                    vefx = new Input(Input.Type.NOTE, 50);
                     break;
                 case BEAT_10K:
                     keys = new Input[14];
@@ -588,6 +670,8 @@ public class PlayModeConfig {
                     keys[13] = new Input(Input.Type.NOTE, 75);
                     start = new Input(Input.Type.NOTE, 47);
                     select = new Input(Input.Type.NOTE, 48);
+                    effect = new Input(Input.Type.NOTE, 49);
+                    vefx = new Input(Input.Type.NOTE, 50);
                     break;
                 case BEAT_14K:
                     keys = new Input[18];
@@ -605,6 +689,8 @@ public class PlayModeConfig {
                     keys[17] = new Input(Input.Type.NOTE, 75);
                     start = new Input(Input.Type.NOTE, 47);
                     select = new Input(Input.Type.NOTE, 48);
+                    effect = new Input(Input.Type.NOTE, 49);
+                    vefx = new Input(Input.Type.NOTE, 50);
                     break;
                 case POPN_5K:
                 case POPN_9K:
@@ -614,6 +700,8 @@ public class PlayModeConfig {
                     }
                     start = new Input(Input.Type.NOTE, 47);
                     select = new Input(Input.Type.NOTE, 48);
+                    effect = new Input(Input.Type.NOTE, 49);
+                    vefx = new Input(Input.Type.NOTE, 50);
                     break;
                 case KEYBOARD_24K:
                     keys = new Input[26];
@@ -624,6 +712,8 @@ public class PlayModeConfig {
                     keys[25] = new Input(Input.Type.PITCH_BEND, -1);
                     start = new Input(Input.Type.NOTE, 44);
                     select = new Input(Input.Type.NOTE, 46);
+                    effect = new Input(Input.Type.NOTE, 48);
+                    vefx = new Input(Input.Type.NOTE, 50);
                     break;
                 case KEYBOARD_24K_DOUBLE:
                     keys = new Input[52];
@@ -637,6 +727,8 @@ public class PlayModeConfig {
                     keys[51] = new Input(Input.Type.NOTE, 97);
                     start = new Input(Input.Type.NOTE, 44);
                     select = new Input(Input.Type.NOTE, 46);
+                    effect = new Input(Input.Type.NOTE, 48);
+                    vefx = new Input(Input.Type.NOTE, 50);
                     break;
             }
             if(!enable) {

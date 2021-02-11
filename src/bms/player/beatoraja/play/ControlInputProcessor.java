@@ -22,6 +22,8 @@ public class ControlInputProcessor {
         private long lanecovertiming;
         private long laneCoverStartTiming = Long.MIN_VALUE;
         private long exitpressedtime;
+        private long restartpressedtime1; // 配置を再配置してリスタート
+        private long restartpressedtime2; // 配置を再配置せずリスタート
 
         private boolean enableControl = true;
         private boolean enableCursor = true;
@@ -153,6 +155,20 @@ public class ControlInputProcessor {
                         player.stopPlay();
                 }else if(!(input.startPressed() && input.isSelectPressed())){
                         exitpressedtime = now;
+                }
+                if((input.isEffectPressed() && now - restartpressedtime1 > 1000 )||
+                                (player.isNoteEnd() && input.isEffectPressed())){
+                        input.setEffectPressed(false);
+                        player.replay(true);
+                }else if(!input.isEffectPressed()){
+                        restartpressedtime1 = now;
+                }
+                if((input.isVEFXPressed() && now - restartpressedtime2 > 1000 )||
+                                (player.isNoteEnd() && input.isVEFXPressed())){
+                        input.setVEFXPressed(false);
+                        player.replay(false);
+                }else if(!input.isVEFXPressed()){
+                        restartpressedtime2 = now;
                 }
                 // stop playing
                 if (input.isExitPressed()) {

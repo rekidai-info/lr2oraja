@@ -36,6 +36,14 @@ public class BMControllerInputProcessor extends BMSPlayerInputDevice {
 	 */
 	private int select = BMKeys.BUTTON_10;
 	/**
+     * Effectキーアサイン
+     */
+    private int effect = BMKeys.BUTTON_11;
+    /**
+     * VEFXキーアサイン
+     */
+    private int vefx = BMKeys.BUTTON_12;
+	/**
 	 * 各AXIS値(-1.0 - 1.0)
 	 */
 	private float[] axis = new float[4];
@@ -93,6 +101,8 @@ public class BMControllerInputProcessor extends BMSPlayerInputDevice {
 		this.buttons = controllerConfig.getKeyAssign().clone();
 		this.start = controllerConfig.getStart();
 		this.select = controllerConfig.getSelect();
+		this.effect = controllerConfig.getEffect();
+        this.vefx = controllerConfig.getVEFX();
 		this.duration = controllerConfig.getDuration();
 		this.jkoc = controllerConfig.getJKOC();
 		this.mouseScratch = controllerConfig.isMouseScratch();
@@ -177,6 +187,14 @@ public class BMControllerInputProcessor extends BMSPlayerInputDevice {
 			this.bmsPlayerInputProcessor.setSelectPressed(buttonstate[select]);
 			buttonchanged[select] = false;
 		}
+		if (effect >= 0 && effect < BMKeys.MAXID && buttonchanged[effect]) {
+            this.bmsPlayerInputProcessor.setEffectPressed(buttonstate[effect]);
+            buttonchanged[effect] = false;
+        }
+        if (vefx >= 0 && vefx < BMKeys.MAXID && buttonchanged[vefx]) {
+            this.bmsPlayerInputProcessor.setVEFXPressed(buttonstate[vefx]);
+            buttonchanged[vefx] = false;
+        }
 	}
 
 	private boolean scratchInput(int button) {

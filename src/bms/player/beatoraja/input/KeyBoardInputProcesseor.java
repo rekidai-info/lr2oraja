@@ -19,7 +19,7 @@ public class KeyBoardInputProcesseor extends BMSPlayerInputDevice implements Inp
     private int[] keys = new int[] { Keys.Z, Keys.S, Keys.X, Keys.D, Keys.C, Keys.F, Keys.V, Keys.SHIFT_LEFT,
             Keys.CONTROL_LEFT, Keys.COMMA, Keys.L, Keys.PERIOD, Keys.SEMICOLON, Keys.SLASH, Keys.APOSTROPHE,
             Keys.BACKSLASH, Keys.SHIFT_RIGHT, Keys.CONTROL_RIGHT, Keys.BUTTON_A };
-    private int[] control = new int[] { Keys.Q, Keys.W };
+    private int[] control = new int[] { Keys.Q, Keys.W, Keys.E, Keys.R };
     /**
      * 数字
      */
@@ -87,7 +87,7 @@ public class KeyBoardInputProcesseor extends BMSPlayerInputDevice implements Inp
     public void setConfig(KeyboardConfig config) {
         this.keys = config.getKeyAssign().clone();
         this.duration = config.getDuration();
-        this.control = new int[] { config.getStart(), config.getSelect() };
+        this.control = new int[] { config.getStart(), config.getSelect(), config.getEffect(), config.getVEFX() };
     }
 
     public boolean keyDown(int keycode) {
@@ -174,6 +174,16 @@ public class KeyBoardInputProcesseor extends BMSPlayerInputDevice implements Inp
             if (selectpressed != keystate[control[1]]) {
                 keystate[control[1]] = selectpressed;
                 this.bmsPlayerInputProcessor.setSelectPressed(selectpressed);
+            }
+            final boolean effectpressed = Gdx.input.isKeyPressed(control[2]);
+            if (effectpressed != keystate[control[2]]) {
+                keystate[control[2]] = effectpressed;
+                this.bmsPlayerInputProcessor.setEffectPressed(effectpressed);
+            }
+            final boolean vefxpressed = Gdx.input.isKeyPressed(control[3]);
+            if (vefxpressed != keystate[control[3]]) {
+                keystate[control[3]] = vefxpressed;
+                this.bmsPlayerInputProcessor.setVEFXPressed(vefxpressed);
             }
         }
         final boolean exitpressed = Gdx.input.isKeyPressed(exit);

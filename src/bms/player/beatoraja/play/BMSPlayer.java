@@ -870,6 +870,84 @@ public class BMSPlayer extends MainState {
                 }
         }
 
+        public void replay(final boolean reRandom) {
+                if (state == STATE_PRACTICE) {
+                        practice.saveProperty();
+                        main.setTimerOn(TIMER_FADEOUT);
+                        state = STATE_PRACTICE_FINISHED;
+                        return;
+                }
+                if (state == STATE_PRELOAD || state == STATE_READY) {
+                        main.setTimerOn(TIMER_FADEOUT);
+                        state = STATE_PRACTICE_FINISHED;
+                        return;
+                }
+                if (main.isTimerOn(TIMER_FAILED) || main.isTimerOn(TIMER_FADEOUT)) {
+                        return;
+                }
+                if (state != STATE_FINISHED && notes == main.getPlayerResource().getSongdata().getNotes()) {
+                        state = STATE_FINISHED;
+                        main.setTimerOn(TIMER_FADEOUT);
+                        Logger.getGlobal().info("STATE_FINISHEDに移行");
+                } else if(state == STATE_FINISHED && !main.isTimerOn(TIMER_FADEOUT)) {
+                        main.setTimerOn(TIMER_FADEOUT);
+                } else if(state != STATE_FINISHED) {
+                        keyinput.stopJudge();
+                        keysound.stopBGPlay();
+
+                        final PlayerResource resource = main.getPlayerResource();
+                        final PlayerConfig config = resource.getPlayerConfig();
+
+                        if (reRandom) {
+                                if (model.getMode().player == 2) {
+                                        if (config.getDoubleoption() == 1) {
+                                                new LaneShuffleModifier(Random.FLIP).modify(model);
+                                        }
+                                        if (config.getRandom2() == Random.RANDOM.id) {
+                                                PatternModifier.create(config.getRandom2(), PatternModifier.SIDE_2P, model.getMode(), config).modify(model);
+                                        }
+                                }
+                            
+                                if (config.getRandom() == Random.RANDOM.id) {
+                                        PatternModifier.create(config.getRandom(), PatternModifier.SIDE_1P, model.getMode(), config).modify(model);
+                                }
+                        }
+                        
+                        resource.getSongdata().setBMSModel(model);
+                        notes = 0;
+                        PMcharaLastnotes[0] = 0;
+                        PMcharaLastnotes[1] = 0;
+                        prevtime = 0;
+                        playtime = (resource.getPlayMode().isAutoPlayMode() ? model.getLastTime() : model.getLastNoteTime()) + TIME_MARGIN;
+                        bga.prepare(this);
+                        starttimeoffset = 0;
+                        gauge = GrooveGauge.create(model, replay != null ? replay.gauge : resource.getPlayerConfig().getGauge(), resource);
+                        for(int i = 0; i < gaugelog.length; i++) {
+                                gaugelog[i] = new FloatArray(playtime / 500 + 2);
+                        }
+                        lanerender.init(model);
+                        judge.init(model, resource);
+                        rhythm = new RhythmTimerProcessor(model,
+                                (getSkin() instanceof PlaySkin) ? ((PlaySkin) getSkin()).getNoteExpansionRate()[0] != 100 || ((PlaySkin) getSkin()).getNoteExpansionRate()[1] != 100 : false);
+                        state = STATE_READY;
+                        main.setTimerOff(TIMER_PLAY);
+                        main.setTimerOff(TIMER_RHYTHM);
+                        main.setTimerOff(TIMER_FAILED);
+                        main.setTimerOff(TIMER_FADEOUT);
+                        main.setTimerOff(TIMER_ENDOFNOTE_1P);
+                        for(int i = TIMER_PM_CHARA_1P_NEUTRAL; i <= TIMER_PM_CHARA_DANCE; i++){
+                                main.setTimerOff(i);
+                        }
+                        if(!main.isTimerOn(TIMER_PM_CHARA_1P_NEUTRAL) || !main.isTimerOn(TIMER_PM_CHARA_2P_NEUTRAL)){
+                                main.setTimerOn(TIMER_PM_CHARA_1P_NEUTRAL);
+                                main.setTimerOn(TIMER_PM_CHARA_2P_NEUTRAL);
+                        }
+                        main.setTimerOn(TIMER_READY);
+                        play(SOUND_READY);
+                        Logger.getGlobal().info("STATE_READYに移行(クイックリトライ)");
+                }
+        }
+
         @Override
         public void dispose() {
                 super.dispose();

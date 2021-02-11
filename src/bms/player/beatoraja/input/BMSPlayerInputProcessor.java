@@ -121,6 +121,8 @@ public class BMSPlayerInputProcessor {
 
     private boolean startPressed;
     private boolean selectPressed;
+    private boolean effectPressed;
+    private boolean vefxPressed;
 
     private boolean exitPressed;
     private boolean enterPressed;
@@ -398,6 +400,22 @@ public class BMSPlayerInputProcessor {
 
     public void setSelectPressed(boolean selectPressed) {
         this.selectPressed = selectPressed;
+    }
+    
+    public boolean isEffectPressed() {
+        return effectPressed;
+    }
+
+    public void setEffectPressed(boolean effectPressed) {
+        this.effectPressed = effectPressed;
+    }
+    
+    public boolean isVEFXPressed() {
+        return vefxPressed;
+    }
+
+    public void setVEFXPressed(boolean vefxPressed) {
+        this.vefxPressed = vefxPressed;
     }
 
     public KeyBoardInputProcesseor getKeyBoardInputProcesseor() {
