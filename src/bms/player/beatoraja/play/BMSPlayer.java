@@ -898,22 +898,25 @@ public class BMSPlayer extends MainState {
                         final PlayerResource resource = main.getPlayerResource();
                         final PlayerConfig config = resource.getPlayerConfig();
 
+                        resource.getReplayData().pattern = pattern.toArray(new PatternModifyLog[pattern.size()]);
+                        resource.reloadBMSFile();
+                        resource.getSongdata().setBMSModel(model);
+
                         if (reRandom) {
                                 if (model.getMode().player == 2) {
-                                        if (config.getDoubleoption() == 1) {
-                                                new LaneShuffleModifier(Random.FLIP).modify(model);
-                                        }
                                         if (config.getRandom2() == Random.RANDOM.id) {
                                                 PatternModifier.create(config.getRandom2(), PatternModifier.SIDE_2P, model.getMode(), config).modify(model);
                                         }
                                 }
-                            
                                 if (config.getRandom() == Random.RANDOM.id) {
                                         PatternModifier.create(config.getRandom(), PatternModifier.SIDE_1P, model.getMode(), config).modify(model);
                                 }
                         }
-                        
-                        resource.getSongdata().setBMSModel(model);
+
+                        judge = new JudgeManager(this);
+                        keyinput = new KeyInputProccessor(this, laneProperty);
+                        keysound = new KeySoundProcessor(this);
+
                         notes = 0;
                         PMcharaLastnotes[0] = 0;
                         PMcharaLastnotes[1] = 0;
