@@ -1,4 +1,4 @@
-package bms.player.beatoraja.play;
+    package bms.player.beatoraja.play;
 
 import static bms.player.beatoraja.CourseData.CourseDataConstraint.*;
 import static bms.player.beatoraja.skin.SkinProperty.*;
@@ -898,56 +898,74 @@ public class BMSPlayer extends MainState {
                         final PlayerResource resource = main.getPlayerResource();
                         final PlayerConfig config = resource.getPlayerConfig();
 
-                        resource.getReplayData().pattern = pattern.toArray(new PatternModifyLog[pattern.size()]);
-                        resource.reloadBMSFile();
-                        resource.getSongdata().setBMSModel(model);
-
-                        if (reRandom) {
-                                if (model.getMode().player == 2) {
-                                        if (config.getRandom2() == Random.RANDOM.id) {
-                                                PatternModifier.create(config.getRandom2(), PatternModifier.SIDE_2P, model.getMode(), config).modify(model);
-                                        }
-                                }
-                                if (config.getRandom() == Random.RANDOM.id) {
-                                        PatternModifier.create(config.getRandom(), PatternModifier.SIDE_1P, model.getMode(), config).modify(model);
-                                }
+                        if (resource.mediaLoadFinished()) {
+                                resource.getBGAManager().stop();
+                                main.getAudioProcessor().stop((Note) null);
                         }
 
-                        judge = new JudgeManager(this);
-                        keyinput = new KeyInputProccessor(this, laneProperty);
-                        keysound = new KeySoundProcessor(this);
+                        if (main.isTimerOn(TIMER_PLAY)) {
+                                resource.reloadBMSFile();
+                                model = resource.getBMSModel();
+                                PatternModifier.modify(model, pattern);
+                                resource.getSongdata().setBMSModel(model);
 
-                        notes = 0;
-                        PMcharaLastnotes[0] = 0;
-                        PMcharaLastnotes[1] = 0;
-                        prevtime = 0;
-                        playtime = (resource.getPlayMode().isAutoPlayMode() ? model.getLastTime() : model.getLastNoteTime()) + TIME_MARGIN;
-                        bga.prepare(this);
-                        starttimeoffset = 0;
-                        gauge = GrooveGauge.create(model, replay != null ? replay.gauge : resource.getPlayerConfig().getGauge(), resource);
-                        for(int i = 0; i < gaugelog.length; i++) {
-                                gaugelog[i] = new FloatArray(playtime / 500 + 2);
-                        }
-                        lanerender.init(model);
-                        judge.init(model, resource);
-                        rhythm = new RhythmTimerProcessor(model,
-                                (getSkin() instanceof PlaySkin) ? ((PlaySkin) getSkin()).getNoteExpansionRate()[0] != 100 || ((PlaySkin) getSkin()).getNoteExpansionRate()[1] != 100 : false);
-                        state = STATE_READY;
-                        main.setTimerOff(TIMER_PLAY);
-                        main.setTimerOff(TIMER_RHYTHM);
-                        main.setTimerOff(TIMER_FAILED);
-                        main.setTimerOff(TIMER_FADEOUT);
-                        main.setTimerOff(TIMER_ENDOFNOTE_1P);
-                        for(int i = TIMER_PM_CHARA_1P_NEUTRAL; i <= TIMER_PM_CHARA_DANCE; i++){
-                                main.setTimerOff(i);
+                                lanerender.init(model);
+                                keyinput.setKeyBeamStop(false);
+                                main.setTimerOff(TIMER_PLAY);
+                                main.setTimerOff(TIMER_RHYTHM);
+                                main.setTimerOff(TIMER_FAILED);
+                                main.setTimerOff(TIMER_FADEOUT);
+                                main.setTimerOff(TIMER_ENDOFNOTE_1P);
+
+                                for(int i = TIMER_PM_CHARA_1P_NEUTRAL; i <= TIMER_PM_CHARA_DANCE; i++) main.setTimerOff(i);
                         }
                         if(!main.isTimerOn(TIMER_PM_CHARA_1P_NEUTRAL) || !main.isTimerOn(TIMER_PM_CHARA_2P_NEUTRAL)){
                                 main.setTimerOn(TIMER_PM_CHARA_1P_NEUTRAL);
                                 main.setTimerOn(TIMER_PM_CHARA_2P_NEUTRAL);
                         }
-                        main.setTimerOn(TIMER_READY);
-                        play(SOUND_READY);
-                        Logger.getGlobal().info("STATE_READYに移行(クイックリトライ)");
+
+                        control.setEnableControl(false);
+                        control.setEnableCursor(false);
+
+                        final long now = main.getNowTime();
+                        final PlaySkin skin = PlaySkin.class.cast(getSkin());
+
+                        if (resource.mediaLoadFinished() && now > skin.getLoadstart() + skin.getLoadend() && now - startpressedtime > 1000) {
+                                if (reRandom) {
+                                        if (model.getMode().player == 2) {
+                                                if (config.getRandom2() == Random.RANDOM.id) {
+                                                        pattern = PatternModifier.merge(pattern, PatternModifier.create(config.getRandom2(), PatternModifier.SIDE_2P, model.getMode(), config).modify(model));
+                                                }
+                                        }
+                                        if (config.getRandom() == Random.RANDOM.id) {
+                                                pattern = PatternModifier.merge(pattern, PatternModifier.create(config.getRandom(), PatternModifier.SIDE_1P, model.getMode(), config).modify(model));
+                                        }
+                                }
+
+                                control.setEnableControl(true);
+                                control.setEnableCursor(true);
+
+                                judge = new JudgeManager(this);
+                                keyinput = new KeyInputProccessor(this, laneProperty);
+                                keysound = new KeySoundProcessor(this);
+
+                                gauge = GrooveGauge.create(model, replay != null ? replay.gauge : resource.getPlayerConfig().getGauge(), resource);
+                                lanerender.init(model);
+                                judge.init(model, resource);
+                                notes = 0;
+                                PMcharaLastnotes[0] = 0;
+                                PMcharaLastnotes[1] = 0;
+                                starttimeoffset = 0;
+                                playtime = (resource.getPlayMode().isAutoPlayMode() ? model.getLastTime() : model.getLastNoteTime()) + TIME_MARGIN;
+                                for(int i = 0; i < gaugelog.length; i++) {
+                                        gaugelog[i] = new FloatArray(playtime / 500 + 2);
+                                }
+                                bga.prepare(this);
+                                state = STATE_READY;
+                                main.setTimerOn(TIMER_READY);
+                                play(SOUND_READY);
+                                Logger.getGlobal().info("STATE_READYに移行（クイックリトライ）");
+                        }
                 }
         }
 
