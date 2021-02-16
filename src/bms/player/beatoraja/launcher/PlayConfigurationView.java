@@ -517,6 +517,7 @@ public class PlayConfigurationView implements Initializable {
 
         player.setShowjudgearea(judgeregion.isSelected());
         player.setTarget(target.getValue());
+        player.setLastPlayTime(System.nanoTime() / 1000);
 
         inputController.commit();
         irController.commit();

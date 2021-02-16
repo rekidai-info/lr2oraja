@@ -170,7 +170,70 @@ public enum BarSorter implements Comparator<Bar> {
 			}
 			return o1.getScore().getMinbp() - o2.getScore().getMinbp();
 		}
-	}
+	},
+	/**
+     * 楽曲の判定ソート
+     */
+    JUDGE_SORTER("JUDGE") {
+        @Override
+        public int compare(Bar o1, Bar o2) {
+            if (!(o1 instanceof SongBar) || !(o2 instanceof SongBar)) {
+                return NAME_SORTER.compare(o1, o2);
+            }
+            if (!((SongBar)o1).existsSong() && !((SongBar)o2).existsSong()) {
+                return 0;
+            }
+            if (!((SongBar)o1).existsSong()) {
+                return 1;
+            }
+            if (!((SongBar)o2).existsSong()) {
+                return -1;
+            }
+            return ((SongBar) o1).getSongData().getJudge() - ((SongBar) o2).getSongData().getJudge();
+        }
+    },
+    /**
+     * 楽曲のプレイカウントソート
+     */
+    PLAY_COUNT_SORTER("PLAY COUNT") {
+        @Override
+        public int compare(Bar o1, Bar o2) {
+            if (!(o1 instanceof SongBar) || !(o2 instanceof SongBar)) {
+                return NAME_SORTER.compare(o1, o2);
+            }
+            if (o1.getScore() == null && o2.getScore() == null) {
+                return 0;
+            }
+            if (o1.getScore() == null) {
+                return 1;
+            }
+            if (o2.getScore() == null) {
+                return -1;
+            }
+            return o1.getScore().getPlaycount() - o2.getScore().getPlaycount();
+        }
+    },
+    /**
+     * 楽曲の更新日付ソート
+     */
+    PLAY_DATE_SORTER("PLAY DATE") {
+        @Override
+        public int compare(Bar o1, Bar o2) {
+            if (!(o1 instanceof SongBar) || !(o2 instanceof SongBar)) {
+                return NAME_SORTER.compare(o1, o2);
+            }
+            if (o1.getScore() == null && o2.getScore() == null) {
+                return 0;
+            }
+            if (o1.getScore() == null) {
+                return 1;
+            }
+            if (o2.getScore() == null) {
+                return -1;
+            }
+            return (int) (o1.getScore().getDate() - o2.getScore().getDate());
+        }
+    }
 	;
 
 	/**

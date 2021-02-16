@@ -175,6 +175,8 @@ public class PlayerConfig {
 
     private PlayModeConfig mode24double = new PlayModeConfig(Mode.KEYBOARD_24K_DOUBLE);
 
+    private long lastPlayTime = 0;
+    
     /**
      * 選択中の選曲時ソート
      */
@@ -600,6 +602,14 @@ public class PlayerConfig {
         this.isRandomSelect = isRandomSelect;
     }
 
+    public long getLastPlayTime() {
+        return lastPlayTime;
+    }
+
+    public void setLastPlayTime(long lastPlayTime) {
+        this.lastPlayTime = lastPlayTime;
+    }
+    
     public String getId() {
         return id;
     }

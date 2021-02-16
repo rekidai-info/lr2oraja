@@ -1,10 +1,14 @@
 package bms.player.beatoraja.skin.lua;
 
 import bms.player.beatoraja.MainState;
+import bms.player.beatoraja.ScoreData;
 import bms.player.beatoraja.play.BMSPlayer;
 import bms.player.beatoraja.skin.SkinObject;
 import bms.player.beatoraja.skin.SkinPropertyMapper;
 import bms.player.beatoraja.skin.property.*;
+
+import java.util.Calendar;
+
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.*;
 
@@ -51,12 +55,36 @@ public class MainStateAccessor {
 				return LuaDouble.valueOf(state.getScoreDataProperty().getNowBestScoreRate());
 			}
 		});
+		table.set("bestscore", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaDouble.valueOf(state.getScoreDataProperty().getNowBestScore());
+            }
+        });
+		table.set("score", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaDouble.valueOf(state.getScoreDataProperty().getNowScore());
+            }
+        });
+		table.set("score_rival", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaDouble.valueOf(state.getScoreDataProperty().getNowRivalScore());
+            }
+        });
 		table.set("exscore_best", new ZeroArgFunction() {
 			@Override
 			public LuaValue call() {
 				return LuaDouble.valueOf(state.getScoreDataProperty().getBestScore());
 			}
 		});
+		table.set("rate_rival_now", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaDouble.valueOf(state.getScoreDataProperty().getNowRivalScoreRate());
+            }
+        });
 		table.set("rate_rival", new ZeroArgFunction() {
 			@Override
 			public LuaValue call() {
@@ -134,6 +162,211 @@ public class MainStateAccessor {
 				return LuaInteger.ZERO;
 			}
 		});
+		
+		final Calendar lastPlayCal = Calendar.getInstance();
+		lastPlayCal.setTimeInMillis(state.main.getPlayerConfig().getLastPlayTime() / 1000);
+		
+		table.set("last_play_beatoraja_micro_sec_time", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(state.main.getPlayerConfig().getLastPlayTime());
+            }
+        });
+		table.set("last_play_beatoraja_year", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(lastPlayCal.get(Calendar.YEAR));
+            }
+        });
+		table.set("last_play_beatoraja_month", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(lastPlayCal.get(Calendar.MONTH) + 1);
+            }
+        });
+        table.set("last_play_beatoraja_day", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(lastPlayCal.get(Calendar.DAY_OF_MONTH));
+            }
+        });
+        table.set("last_play_beatoraja_hour", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(lastPlayCal.get(Calendar.HOUR_OF_DAY));
+            }
+        });
+        table.set("last_play_beatoraja_minute", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(lastPlayCal.get(Calendar.MINUTE));
+            }
+        });
+        table.set("last_play_beatoraja_second", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(lastPlayCal.get(Calendar.SECOND));
+            }
+        });
+		
+		// とりあえず NUMBER_ プロパティには追加せず関数として追加しておく
+		final ScoreData score = state.getScoreDataProperty().getScoreData();
+		final ScoreData rivalScore = state.getScoreDataProperty().getRivalScoreData();
+		final Calendar scoreCal = score == null ? null : Calendar.getInstance();
+		final Calendar rivalScoreCal = rivalScore == null ? null : Calendar.getInstance();
+
+		if (scoreCal != null) {
+		    scoreCal.setTimeInMillis(score.getDate() * 1000);
+		}
+		if (rivalScoreCal != null) {
+		    rivalScoreCal.setTimeInMillis(rivalScore.getDate() * 1000);
+        }
+		
+		// 自己スコアの日付
+	    table.set("score_date_sec_time", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (score != null) {
+                    return LuaNumber.valueOf(score.getDate());
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+	    table.set("score_date_year", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (scoreCal != null) {
+                    return LuaNumber.valueOf(scoreCal.get(Calendar.YEAR));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+	    table.set("score_date_month", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (scoreCal != null) {
+                    return LuaNumber.valueOf(scoreCal.get(Calendar.MONTH) + 1);
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+	    table.set("score_date_day", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (scoreCal != null) {
+                    return LuaNumber.valueOf(scoreCal.get(Calendar.DAY_OF_MONTH));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+	    table.set("score_date_hour", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (scoreCal != null) {
+                    return LuaNumber.valueOf(scoreCal.get(Calendar.HOUR_OF_DAY));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+	    table.set("score_date_minute", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (scoreCal != null) {
+                    return LuaNumber.valueOf(scoreCal.get(Calendar.MINUTE));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+	    table.set("score_date_second", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (scoreCal != null) {
+                    return LuaNumber.valueOf(scoreCal.get(Calendar.SECOND));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+	    
+	    // ライバルスコアの日付
+	    table.set("score_date_rival_sec_time", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (rivalScore != null) {
+                    return LuaNumber.valueOf(rivalScore.getDate());
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+        table.set("score_date_rival_year", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (rivalScoreCal != null) {
+                    return LuaNumber.valueOf(rivalScoreCal.get(Calendar.YEAR));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+        table.set("score_date_rival_month", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (rivalScoreCal != null) {
+                    return LuaNumber.valueOf(rivalScoreCal.get(Calendar.MONTH) + 1);
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+        table.set("score_date_rival_day", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (rivalScoreCal != null) {
+                    return LuaNumber.valueOf(rivalScoreCal.get(Calendar.DAY_OF_MONTH));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+        table.set("score_date_rival_hour", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (rivalScoreCal != null) {
+                    return LuaNumber.valueOf(rivalScoreCal.get(Calendar.HOUR_OF_DAY));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+        table.set("score_date_rival_minute", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (rivalScoreCal != null) {
+                    return LuaNumber.valueOf(rivalScoreCal.get(Calendar.MINUTE));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+        table.set("score_date_rival_second", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                if (rivalScoreCal != null) {
+                    return LuaNumber.valueOf(rivalScoreCal.get(Calendar.SECOND));
+                }
+                return LuaInteger.ZERO;
+            }
+        });
+        
+        // 完走した場合にのみカウントされる起動後からのプレイ回数とノーツ数（総プレイ回数と総ノーツ数の仕様も完走時のみのカウントのため）
+        table.set("total_play_counts_in_session", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(state.main.getPlayerResource().getTotalPlayCountsInSession());
+
+            }
+        });
+        table.set("total_play_notes_in_session", new ZeroArgFunction() {
+            @Override
+            public LuaValue call() {
+                return LuaNumber.valueOf(state.main.getPlayerResource().getTotalPlayNotesInSession());
+
+            }
+        });
 	}
 
 	/**

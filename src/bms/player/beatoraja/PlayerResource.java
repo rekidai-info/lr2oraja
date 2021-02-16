@@ -38,6 +38,7 @@ public class PlayerResource {
 	 */
 	private Mode orgmode;
 
+	private static PlayerData firstplayerdata = null;
 	private PlayerData playerdata = new PlayerData();
 
 	private Config config;
@@ -482,8 +483,49 @@ public class PlayerResource {
 	}
 
 	public void setPlayerData(PlayerData playerdata) {
-		this.playerdata = playerdata;
+	    synchronized(PlayerResource.class) {
+    	    if (firstplayerdata == null) {
+    	        firstplayerdata = playerdata;
+    	    }
+    	    
+    		this.playerdata = playerdata;
+	    }
 	}
+	
+	public int getTotalPlayCountsInSession() {
+	    synchronized(PlayerResource.class) {
+    	    if (firstplayerdata == null) {
+    	        return 0;
+    	    }
+    	    if (playerdata == null) {
+                return 0;
+            }
+    	    
+    	    return (int) (playerdata.getPlaycount() - firstplayerdata.getPlaycount());
+	    }
+	}
+	
+	public int getTotalPlayNotesInSession() {
+	    synchronized(PlayerResource.class) {
+            if (firstplayerdata == null) {
+                return 0;
+            }
+            if (playerdata == null) {
+                return 0;
+            }
+            
+            final long first = firstplayerdata.getEpg() + firstplayerdata.getLpg() +
+                    firstplayerdata.getEgr() + firstplayerdata.getLgr() +
+                    firstplayerdata.getEgd() + firstplayerdata.getLgd() +
+                    firstplayerdata.getEbd() + firstplayerdata.getLbd();
+            final long last = playerdata.getEpg() + playerdata.getLpg() +
+                    playerdata.getEgr() + playerdata.getLgr() +
+                    playerdata.getEgd() + playerdata.getLgd() +
+                    playerdata.getEbd() + playerdata.getLbd();
+            
+            return (int) (last - first);
+	    }
+    }
 
 	private void setTableinfo(){
 		final String[] urls = this.getConfig().getTableURL();
