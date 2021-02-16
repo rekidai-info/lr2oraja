@@ -357,14 +357,12 @@ public class MainStateAccessor {
             @Override
             public LuaValue call() {
                 return LuaNumber.valueOf(state.main.getPlayerResource().getTotalPlayCountsInSession());
-
             }
         });
         table.set("total_play_notes_in_session", new ZeroArgFunction() {
             @Override
             public LuaValue call() {
                 return LuaNumber.valueOf(state.main.getPlayerResource().getTotalPlayNotesInSession());
-
             }
         });
 	}
