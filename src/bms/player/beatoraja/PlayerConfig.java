@@ -86,6 +86,9 @@ public class PlayerConfig {
      */
     private int longnoteMode = 0;
     private double longnoteRate = 1.0;
+    
+    private boolean startFromHere = false;
+    
     /**
      * アシストオプション:判定拡大
      */
@@ -498,6 +501,14 @@ public class PlayerConfig {
         this.misslayerDuration = misslayerTime;
     }
 
+    public boolean isStartFromHere() {
+        return startFromHere;
+    }
+
+    public void setStartFromHere(boolean startFromHere) {
+        this.startFromHere = startFromHere;
+    }
+
     public boolean isCustomJudge() {
         return customJudge;
     }
@@ -505,7 +516,7 @@ public class PlayerConfig {
     public void setCustomJudge(boolean customJudge) {
         this.customJudge = customJudge;
     }
-
+    
     public int getKeyJudgeWindowRatePerfectGreat() {
         return keyJudgeWindowRatePerfectGreat;
     }

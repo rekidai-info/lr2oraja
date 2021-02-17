@@ -62,6 +62,8 @@ public class LaneRenderer {
 	private final float noteExpansionTime = 9;
 	//最大拡大から通常サイズに戻るまでの時間
 	private final float noteContractionTime = 150;
+	
+	private TimeLine firstTimeLine;
 
 	public LaneRenderer(BMSPlayer main, BMSModel model) {
 
@@ -154,6 +156,27 @@ public class LaneRenderer {
 			basehispeed = playconfig.getHispeed();
 		}
 		this.hispeedmargin = playconfig.getHispeedMargin();
+		
+		if (config.isStartFromHere()) {
+    		firstTimeLine = null;
+    		for (final TimeLine tl : model.getAllTimeLines()) {
+    		    boolean found = false;
+    		    
+    		    for (int lane = 0; lane < tl.getLaneCount(); lane++) {
+    		        final Note note = tl.getNote(lane);
+    		        
+    		        if (note != null) {
+    		            found = true;
+    		            firstTimeLine = tl;
+    		            break;
+    		        }
+    		    }
+    		    
+    		    if (found) {
+    		        break;
+    		    }
+    		}
+		}
 	}
 
 	public float getHispeed() {
@@ -409,6 +432,51 @@ public class LaneRenderer {
 		y = orgy;
 		final long now = main.main.getNowTime();
 		
+		if (config.isStartFromHere() && firstTimeLine != null && (main.getState() == BMSPlayer.STATE_PRELOAD || main.getState() == BMSPlayer.STATE_READY)) {
+            for (int lane = 0; lane < lanes.length; lane++) {
+                final float scale = lanes[lane].scale;
+                final Note note = firstTimeLine.getNote(lane);
+                if (note != null) {
+                    float laneHeight = lanes[lane].region.height;
+                    if (isEnableLift()) {
+                        laneHeight -= (int) (laneHeight * getLiftRegion());
+                    }
+                    
+                    float dstx = lanes[lane].region.x + offsetX;
+                    float dsty = lanes[lane].region.y + lanes[lane].region.height - (isEnableLanecover() ? (int) (laneHeight * getLanecover()) : 0) + offsetY - (scale - offsetH) / 2;
+                    float dstw = lanes[lane].region.width + offsetW;
+                    float dsth = scale + offsetH;
+                    if(skin.getNoteExpansionRate()[0] != 100 || skin.getNoteExpansionRate()[1] != 100) {
+                        if((now - main.getNowQuarterNoteTime()) < noteExpansionTime) {
+                            dstw *= 1 + (skin.getNoteExpansionRate()[0]/100.0f - 1) * (now - main.getNowQuarterNoteTime()) / noteExpansionTime;
+                            dsth *= 1 + (skin.getNoteExpansionRate()[1]/100.0f - 1) * (now - main.getNowQuarterNoteTime()) / noteExpansionTime;
+                            dstx -= (dstw - lanes[lane].region.width) / 2;
+                            dsty -= (dsth - scale) / 2;
+                        } else if((now - main.getNowQuarterNoteTime()) >= noteExpansionTime && (now - main.getNowQuarterNoteTime()) <= (noteExpansionTime + noteContractionTime)) {
+                            dstw *= 1 + (skin.getNoteExpansionRate()[0]/100.0f - 1) * (noteContractionTime - (now - main.getNowQuarterNoteTime() - noteExpansionTime)) / noteContractionTime;
+                            dsth *= 1 + (skin.getNoteExpansionRate()[1]/100.0f - 1) * (noteContractionTime - (now - main.getNowQuarterNoteTime() - noteExpansionTime)) / noteContractionTime;
+                            dstx -= (dstw - lanes[lane].region.width) / 2;
+                            dsty -= (dsth - scale) / 2;
+                        }
+                    }
+                    if (note instanceof NormalNote) {
+                        // draw normal note
+                        if (lanes[lane].dstnote2 != Integer.MIN_VALUE) {
+                            if (firstTimeLine.getMicroTime() >= microtime && (note.getState() == 0 || note.getState() >= 4)) {
+                                final TextureRegion s = config.isMarkprocessednote() && note.getState() != 0
+                                ? lanes[lane].processedImage : lanes[lane].noteImage;
+                                sprite.draw(s, dstx, dsty, dstw, dsth);
+                            }
+                        } else if (firstTimeLine.getMicroTime() >= microtime || (conf.isShowpastnote() && note.getState() == 0)) {
+                            final TextureRegion s = config.isMarkprocessednote() && note.getState() != 0
+                                    ? lanes[lane].processedImage : lanes[lane].noteImage;
+                            sprite.draw(s, dstx, dsty, dstw, dsth);
+                        }
+                    }
+                }
+            }
+		}
+		
 		for (int i = pos; i < timelines.length && y <= hu; i++) {
 			final TimeLine tl = timelines[i];
 			if (tl.getMicroTime() >= microtime) {
@@ -647,6 +715,9 @@ public class LaneRenderer {
 		if (blank != null) {
 			blank.getTexture().dispose();
 			blank = null;
+		}
+		if (firstTimeLine != null) {
+		    firstTimeLine = null;
 		}
 	}
 }

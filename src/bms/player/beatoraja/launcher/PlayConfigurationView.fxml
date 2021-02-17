@@ -189,7 +189,8 @@
                                                  <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="10" initialValue="0" max="99999" min="0" />
                                              </valueFactory>
                                          </NumericSpinner>
-                                         <CheckBox fx:id="customjudge" mnemonicParsing="false" text="%EXPAND_JUDGE" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+                                         <CheckBox fx:id="startfromhere" mnemonicParsing="false" text="%START_FROM_HERE" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+                                         <CheckBox fx:id="customjudge" mnemonicParsing="false" text="%EXPAND_JUDGE" GridPane.columnIndex="0" GridPane.rowIndex="10" />
                                          <HBox prefHeight="30.0" prefWidth="723.0" GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.columnSpan="3">
                                          <Label text="KEY PG" prefWidth="60.0"/>
                                          <NumericSpinner fx:id="njudgepg" editable="true" prefWidth="100.0">

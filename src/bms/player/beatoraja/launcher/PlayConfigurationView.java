@@ -140,6 +140,8 @@ public class PlayConfigurationView implements Initializable {
     @FXML
     private ComboBox<Integer> bottomshiftablegauge;
     @FXML
+    private CheckBox startfromhere;
+    @FXML
     private CheckBox customjudge;
     @FXML
     private Spinner<Integer> njudgepg;
@@ -414,6 +416,7 @@ public class PlayConfigurationView implements Initializable {
         gaugeautoshift.setValue(player.getGaugeAutoShift());
         bottomshiftablegauge.setValue(player.getBottomShiftableGauge());
 
+        startfromhere.setSelected(player.isStartFromHere());
         customjudge.setSelected(player.isCustomJudge());
         njudgepg.getValueFactory().setValue(player.getKeyJudgeWindowRatePerfectGreat());
         njudgegr.getValueFactory().setValue(player.getKeyJudgeWindowRateGreat());
@@ -501,6 +504,7 @@ public class PlayConfigurationView implements Initializable {
         player.setBpmguide(bpmguide.isSelected());
         player.setGaugeAutoShift(gaugeautoshift.getValue());
         player.setBottomShiftableGauge(bottomshiftablegauge.getValue());
+        player.setStartFromHere(startfromhere.isSelected());
         player.setCustomJudge(customjudge.isSelected());
         player.setKeyJudgeWindowRatePerfectGreat(getValue(njudgepg));
         player.setKeyJudgeWindowRateGreat(getValue(njudgegr));
