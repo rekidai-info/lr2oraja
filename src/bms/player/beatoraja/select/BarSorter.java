@@ -189,7 +189,7 @@ public enum BarSorter implements Comparator<Bar> {
             if (!((SongBar)o2).existsSong()) {
                 return -1;
             }
-            return ((SongBar) o1).getSongData().getJudge() - ((SongBar) o2).getSongData().getJudge();
+            return ((SongBar) o2).getSongData().getJudge() - ((SongBar) o1).getSongData().getJudge();
         }
     },
     /**
@@ -210,7 +210,7 @@ public enum BarSorter implements Comparator<Bar> {
             if (o2.getScore() == null) {
                 return -1;
             }
-            return o1.getScore().getPlaycount() - o2.getScore().getPlaycount();
+            return o2.getScore().getPlaycount() - o1.getScore().getPlaycount();
         }
     },
     /**
@@ -231,7 +231,7 @@ public enum BarSorter implements Comparator<Bar> {
             if (o2.getScore() == null) {
                 return -1;
             }
-            return (int) (o1.getScore().getDate() - o2.getScore().getDate());
+            return (int) (o2.getScore().getDate() - o1.getScore().getDate());
         }
     }
 	;
