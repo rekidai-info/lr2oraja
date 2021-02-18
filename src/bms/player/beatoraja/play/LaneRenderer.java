@@ -1,8 +1,11 @@
 package bms.player.beatoraja.play;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import bms.player.beatoraja.*;
+import bms.player.beatoraja.pattern.PatternModifier;
+import bms.player.beatoraja.pattern.PatternModifyLog;
 import bms.player.beatoraja.play.SkinNote.SkinLane;
 
 import bms.model.*;
@@ -436,7 +439,7 @@ public class LaneRenderer {
             for (int lane = 0; lane < lanes.length; lane++) {
                 final float scale = lanes[lane].scale;
                 final Note note = firstTimeLine.getNote(lane);
-                if (note != null) {
+                if (lane == 0 || lane == 8 || note instanceof NormalNote) {
                     float laneHeight = lanes[lane].region.height;
                     if (isEnableLift()) {
                         laneHeight -= (int) (laneHeight * getLiftRegion());
@@ -459,8 +462,8 @@ public class LaneRenderer {
                             dsty -= (dsth - scale) / 2;
                         }
                     }
-                    if (note instanceof NormalNote) {
-                        // draw normal note
+
+                    if (note != null) {
                         if (lanes[lane].dstnote2 != Integer.MIN_VALUE) {
                             if (firstTimeLine.getMicroTime() >= microtime && (note.getState() == 0 || note.getState() >= 4)) {
                                 final TextureRegion s = config.isMarkprocessednote() && note.getState() != 0
@@ -471,6 +474,26 @@ public class LaneRenderer {
                             final TextureRegion s = config.isMarkprocessednote() && note.getState() != 0
                                     ? lanes[lane].processedImage : lanes[lane].noteImage;
                             sprite.draw(s, dstx, dsty, dstw, dsth);
+                        }
+                    }
+                    
+                    if (lane == 0 || lane == 8) {
+                        final List<PatternModifyLog> pattern = main.getPattern();
+                        
+                        if (pattern != null) {
+                            final int[] order = PatternModifier.order(model, pattern);
+                            
+                            if (order != null) {
+                                int[] notesOrder;
+                                
+                                if (lane == 0) {
+                                    notesOrder = Arrays.stream(Arrays.copyOfRange(order, 0, 7)).map(i -> i >= 9 ? i - 8 : i).toArray();
+                                } else {
+                                    notesOrder = Arrays.stream(Arrays.copyOfRange(order, 8, 15)).map(i -> i >= 9 ? i - 8 : i).toArray();
+                                }
+
+                                sprite.draw(font, Arrays.stream(notesOrder).mapToObj(Integer::toString).collect(Collectors.joining()), dstx, dsty - dsth, Color.GOLD);
+                            }
                         }
                     }
                 }

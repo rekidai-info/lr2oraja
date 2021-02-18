@@ -3,6 +3,7 @@ package bms.player.beatoraja.pattern;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import com.badlogic.gdx.utils.IntArray;
 
@@ -77,6 +78,40 @@ public abstract class PatternModifier {
 			}
 		}
 	}
+	
+	public static int[] order(final BMSModel model, final List<PatternModifyLog> log) {
+	    if (log == null) {
+	        return null;
+	    }
+	    
+	    final int lanes = model.getMode().key;
+	    final int[] result = IntStream.rangeClosed(1, lanes).toArray();
+	    
+	    if (log.isEmpty()) {
+            return result;
+        }
+
+	    for (TimeLine tl : model.getAllTimeLines()) {
+	        PatternModifyLog pm = null;
+            for (PatternModifyLog pms : log) {
+                if (pms.section == tl.getSection()) {
+                    pm = pms;
+                    break;
+                }
+	        }
+
+            if (pm != null) {
+                final int[] original = IntStream.rangeClosed(1, lanes).toArray();
+        
+                for (int i = 0; i < lanes; i++) {
+                    final int mod = i < pm.modify.length ? pm.modify[i] : i;
+                    result[i] = original[mod];
+                }
+            }
+	    }
+        
+        return result;
+    }
 
 	public static List<PatternModifyLog> merge(List<PatternModifyLog> log, List<PatternModifyLog> log2) {
 		List<PatternModifyLog> result = new ArrayList(Math.max(log.size(), log2.size()));

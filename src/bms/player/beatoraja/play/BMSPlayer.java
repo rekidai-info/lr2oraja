@@ -1037,4 +1037,12 @@ public class BMSPlayer extends MainState {
         public long getNowQuarterNoteTime() {
                 return rhythm != null ? rhythm.getNowQuarterNoteTime() : 0;
         }
+        
+        public List<PatternModifyLog> getPattern() {
+                if (pattern == null) {
+                        return null;
+                }
+                
+                return Collections.unmodifiableList(pattern);
+        }
 }
