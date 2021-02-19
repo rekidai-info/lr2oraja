@@ -1,6 +1,7 @@
 package bms.player.beatoraja.pattern;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import bms.model.*;
 
@@ -30,7 +31,7 @@ public class LongNoteModifier extends PatternModifier {
 			AssistLevel assist = AssistLevel.NONE;
 			for (TimeLine tl : model.getAllTimeLines()) {
 				for(int lane = 0;lane < model.getMode().key;lane++) {
-					if(tl.getNote(lane) instanceof LongNote && Math.random() > rate) {
+					if(tl.getNote(lane) instanceof LongNote && ThreadLocalRandom.current().nextDouble() > rate) {
 						LongNote ln = (LongNote) tl.getNote(lane);
 						if(ln.isEnd()) {
 							tl.setNote(lane, null);
@@ -52,7 +53,7 @@ public class LongNoteModifier extends PatternModifier {
 		TimeLine[] tls = model.getAllTimeLines();
 		for (int i = 0;i < tls.length - 1;i++) {
 			for(int lane = 0;lane < model.getMode().key;lane++) {
-				if(tls[i].getNote(lane) instanceof NormalNote && !tls[i + 1].existNote(lane) && Math.random() > rate) {
+				if(tls[i].getNote(lane) instanceof NormalNote && !tls[i + 1].existNote(lane) && ThreadLocalRandom.current().nextDouble() > rate) {
 					int lntype = LongNote.TYPE_UNDEFINED;
 					switch(mode) {
 						case ADD_LN:
@@ -65,7 +66,7 @@ public class LongNoteModifier extends PatternModifier {
 							lntype = LongNote.TYPE_HELLCHARGENOTE;
 							break;
 						case ADD_ALL:
-							lntype = (int) (Math.random() * 3 + 1);
+							lntype = (int) (ThreadLocalRandom.current().nextDouble() * 3 + 1);
 							break;
 					}
 

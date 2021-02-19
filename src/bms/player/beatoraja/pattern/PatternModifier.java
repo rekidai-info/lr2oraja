@@ -3,6 +3,7 @@ package bms.player.beatoraja.pattern;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 import com.badlogic.gdx.utils.IntArray;
@@ -275,7 +276,7 @@ public abstract class PatternModifier {
 			    int r = Integer.parseInt(randomOrder.get(lane)) - 1;
 			    result[keys[lane]] = l.get(r);
 			} else {
-			    int r = (int) (Math.random() * l.size());
+			    int r = (int) (ThreadLocalRandom.current().nextDouble() * l.size());
 			    result[keys[lane]] = l.get(r);
 	            l.remove(r);
 			}
@@ -285,8 +286,8 @@ public abstract class PatternModifier {
 	}
 
 	protected static int[] rotate(int[] keys) {
-		boolean inc = (int) (Math.random() * 2) == 1;
-		int start = (int) (Math.random() * (keys.length - 1)) + (inc ? 1 : 0);
+		boolean inc = (int) (ThreadLocalRandom.current().nextDouble() * 2) == 1;
+		int start = (int) (ThreadLocalRandom.current().nextDouble() * (keys.length - 1)) + (inc ? 1 : 0);
 		return rotate(keys, start, inc);
 	}
 

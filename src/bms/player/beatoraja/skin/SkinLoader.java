@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 
 import java.io.File;
 import java.nio.file.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * スキンローダー
@@ -113,7 +114,7 @@ public abstract class SkinLoader {
                     }
                 }
                 if (l.size > 0) {
-                    imagefile = l.get((int) (Math.random() * l.size));
+                    imagefile = l.get((int) (ThreadLocalRandom.current().nextDouble() * l.size));
                 }
             }
         }

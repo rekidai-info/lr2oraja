@@ -8,6 +8,9 @@ import bms.player.beatoraja.result.AbstractResult;
 import bms.player.beatoraja.result.MusicResult;
 
 import static bms.player.beatoraja.play.GrooveGauge.*;
+
+import java.util.concurrent.ThreadLocalRandom;
+
 import bms.player.beatoraja.skin.*;
 import bms.player.beatoraja.skin.Skin.SkinObjectRenderer;
 
@@ -111,7 +114,7 @@ public class SkinGauge extends SkinObject {
 		switch(animationType) {
 		case ANIMATION_RANDOM:
 			if (atime < time) {
-				animation = (int) (Math.random() * (animationRange + 1));
+				animation = (int) (ThreadLocalRandom.current().nextDouble() * (animationRange + 1));
 				atime = time + duration;
 			}
 			break;

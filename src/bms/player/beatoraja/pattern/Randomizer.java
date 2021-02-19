@@ -1,6 +1,7 @@
 package bms.player.beatoraja.pattern;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import bms.model.*;
@@ -248,7 +249,7 @@ abstract class TimeBasedRandomizer extends Randomizer {
 			List<Integer> minLane = inferiorLane.stream()
 					.filter(l -> {return lastNoteTime.get(l) == min;})
 					.collect(Collectors.toList());
-			Integer m = minLane.get((int)(minLane.size() * Math.random()));
+			Integer m = minLane.get((int)(minLane.size() * ThreadLocalRandom.current().nextDouble()));
 			randomMap.put(noteLane.remove(0), m);
 			inferiorLane.remove(m);
 		}
@@ -256,7 +257,7 @@ abstract class TimeBasedRandomizer extends Randomizer {
 		// 残りをランダムに置いていく
 		primaryLane.addAll(inferiorLane);
 		while (!emptyLane.isEmpty()) {
-			int r = (int) (primaryLane.size() * Math.random());
+			int r = (int) (primaryLane.size() * ThreadLocalRandom.current().nextDouble());
 			randomMap.put(emptyLane.remove(0), primaryLane.remove(r));
 		}
 
@@ -301,7 +302,7 @@ class SRandomizer extends TimeBasedRandomizer {
 
 	@Override
 	int selectLane(List<Integer> lane) {
-		return (int) (lane.size() * Math.random());
+		return (int) (lane.size() * ThreadLocalRandom.current().nextDouble());
 	}
 }
 
@@ -319,7 +320,7 @@ class SpiralRandomizer extends Randomizer {
 	@Override
 	public void setModifyLanes(int[] lanes) {
 		super.setModifyLanes(lanes);
-		this.increment = (int) ((lanes.length - 1) * Math.random()) + 1;
+		this.increment = (int) ((lanes.length - 1) * ThreadLocalRandom.current().nextDouble()) + 1;
 		this.head = 0;
 		this.cycle = lanes.length;
 	}
@@ -442,7 +443,7 @@ class AllScratchRandomizer extends TimeBasedRandomizer {
 			}
 			return index;
 		}
-		return (int) (lane.size() * Math.random());
+		return (int) (lane.size() * ThreadLocalRandom.current().nextDouble());
 	}
 }
 
@@ -507,16 +508,16 @@ class NoMurioshiRandomizer extends TimeBasedRandomizer {
 						.collect(Collectors.toList());
 				if (candidate2.size() != 0) {
 					// 候補の長さがTLのノート数以上のものが残れば、それを選ぶ
-					buttonCombination = candidate2.get((int)(candidate2.size() * Math.random()));
+					buttonCombination = candidate2.get((int)(candidate2.size() * ThreadLocalRandom.current().nextDouble()));
 				} else {
 					// 縦連打が発生しないことより、無理押しが発生しないことを優先する
 					randomMap = new HashMap<>();
-					buttonCombination = candidate.get((int)(candidate2.size() * Math.random())).stream()
+					buttonCombination = candidate.get((int)(candidate2.size() * ThreadLocalRandom.current().nextDouble())).stream()
 							.filter(assignableLane::contains).collect(Collectors.toList());
 					List<Integer> e = getNoteExistLane(tl).stream()
 							.filter(changeableLane::contains).collect(Collectors.toList());
 					e.stream().forEach(lane -> {
-						int i = (int)(buttonCombination.size() * Math.random());
+						int i = (int)(buttonCombination.size() * ThreadLocalRandom.current().nextDouble());
 						randomMap.put(lane, buttonCombination.get(i));
 						changeableLane.remove((Integer)lane);
 						assignableLane.remove(buttonCombination.remove(i));
@@ -541,10 +542,10 @@ class NoMurioshiRandomizer extends TimeBasedRandomizer {
 		if (flag) {
 			List<Integer> l = lane.stream().filter(buttonCombination::contains).collect(Collectors.toList());
 			if (l.size() != 0) {
-				return lane.indexOf(l.get((int) (l.size() * Math.random())));
+				return lane.indexOf(l.get((int) (l.size() * ThreadLocalRandom.current().nextDouble())));
 			}
 		}
-		return (int) (lane.size() * Math.random());
+		return (int) (lane.size() * ThreadLocalRandom.current().nextDouble());
 	}
 
 	// LNアクティブも含めたタイムラインのノート数
@@ -613,7 +614,7 @@ class ConvergeRandomizer extends TimeBasedRandomizer {
 		List<Integer> gya = lane.stream()
 				.filter(l -> {return rendaCount.get(l) == max;})
 				.collect(Collectors.toList());
-		int l = gya.get((int) (gya.size() * Math.random()));
+		int l = gya.get((int) (gya.size() * ThreadLocalRandom.current().nextDouble()));
 		rendaCount.put(l, rendaCount.get(l) + 1);
 		return lane.indexOf(l);
 	}

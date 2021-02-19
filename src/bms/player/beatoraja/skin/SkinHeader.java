@@ -8,6 +8,7 @@ import static bms.player.beatoraja.skin.SkinProperty.OPTION_RANDOM_VALUE;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * スキンのヘッダ情報
@@ -142,7 +143,7 @@ public class SkinHeader {
 						op = option.value;
 					} else {
 						if (customOption.option.length > 0) {
-							op = customOption.option[(int) (Math.random() * customOption.option.length)];
+							op = customOption.option[(int) (ThreadLocalRandom.current().nextDouble() * customOption.option.length)];
 						}
 					}
 					break;
@@ -179,7 +180,7 @@ public class SkinHeader {
 								}
 							}
 							if (l.size() > 0) {
-								String filename = l.get((int) (Math.random() * l.size())).getName();
+								String filename = l.get((int) (ThreadLocalRandom.current().nextDouble() * l.size())).getName();
 								customFile.filename = filename;
 							}
 						}

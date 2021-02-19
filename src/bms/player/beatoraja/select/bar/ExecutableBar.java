@@ -2,6 +2,7 @@ package bms.player.beatoraja.select.bar;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ThreadLocalRandom;
 
 import bms.player.beatoraja.MainState;
 import bms.player.beatoraja.select.MusicSelector;
@@ -82,7 +83,7 @@ public class ExecutableBar extends SelectableBar {
 	private void createIndexQueue() {
 		queue = new ArrayDeque<>();
 		for (int i = 0; i < QueueLength - 1; i++) {
-			int index = ((int) (Math.random() * (songs.length)));
+			int index = ((int) (ThreadLocalRandom.current().nextDouble() * (songs.length)));
 			queue.add(index);
 		}
 	}

@@ -3,6 +3,7 @@ package bms.player.beatoraja.pattern;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -270,13 +271,13 @@ public class LaneShuffleModifier extends PatternModifier {
 		
 		int[] result = new int[9];
 		if(kouhoPatternList.size() > 0) {
-			int r = (int) (Math.random() * kouhoPatternList.size());
+			int r = (int) (ThreadLocalRandom.current().nextDouble() * kouhoPatternList.size());
 			for (int i = 0; i < 9; i++) {
 				result[(int) (kouhoPatternList.get(r)).get(i)] = i;
 			}
 		//無理押しが来ない譜面が存在しない場合は正規か鏡でランダム
 		} else {
-			int mirror = (int) (Math.random() * 2);
+			int mirror = (int) (ThreadLocalRandom.current().nextDouble() * 2);
 			for (int i = 0; i < 9; i++) {
 				result[i] = mirror == 0 ? i : 8 - i;
 			}

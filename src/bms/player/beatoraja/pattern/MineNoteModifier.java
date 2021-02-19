@@ -1,6 +1,7 @@
 package bms.player.beatoraja.pattern;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import bms.model.*;
 
@@ -58,7 +59,7 @@ public class MineNoteModifier extends PatternModifier {
 				if(blank[key]) {
 					switch (mode) {
 						case ADD_RANDOM:
-							if(Math.random() > 0.9) {
+							if(ThreadLocalRandom.current().nextDouble() > 0.9) {
 								tl.setNote(key, new MineNote(-1, damage));
 							}
 							break;

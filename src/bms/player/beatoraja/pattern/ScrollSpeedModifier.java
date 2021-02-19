@@ -4,6 +4,7 @@ import bms.model.BMSModel;
 import bms.model.TimeLine;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * スクロールスピード変更に関するオプション
@@ -47,7 +48,7 @@ public class ScrollSpeedModifier extends PatternModifier {
         double current = base;
         for (TimeLine tl : model.getAllTimeLines()) {
             if(tl.getSectionLine()) {
-                current = base * (1.0 + Math.random() * rate * 2 - rate);
+                current = base * (1.0 + ThreadLocalRandom.current().nextDouble() * rate * 2 - rate);
             }
             tl.setScroll(current);
         }

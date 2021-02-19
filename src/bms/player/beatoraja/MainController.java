@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -842,10 +843,10 @@ public class MainController extends ApplicationAdapter {
 
         public void shuffle() {
             if(bgms.size > 0) {
-                currentBGMPath = bgms.get((int) (Math.random() * bgms.size));
+                currentBGMPath = bgms.get((int) (ThreadLocalRandom.current().nextDouble() * bgms.size));
             }
             if(sounds.size > 0) {
-                currentSoundPath = sounds.get((int) (Math.random() * sounds.size));
+                currentSoundPath = sounds.get((int) (ThreadLocalRandom.current().nextDouble() * sounds.size));
             }
             Logger.getGlobal().info("BGM Set : " + currentBGMPath + " Sound Set : " + currentSoundPath);
         }
