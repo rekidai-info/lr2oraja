@@ -24,6 +24,7 @@
 * MainStateAccessor にいくつかの関数を追加しました
 * ここからスタート機能を追加しました
   * 「プレイオプション」の「ここからスタート」にチェックを入れてください
+* 乱数の精度を大幅に向上
 
 なお、beatoraja を Java 15 以降のバージョンで起動する方法は以下を参照してください
 https://codoc.jp/sites/haaEBtTkhA/entries/rDDRUocsng
