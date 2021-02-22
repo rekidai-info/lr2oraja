@@ -322,7 +322,7 @@ public class KeyConfiguration extends MainState {
 			sprite.begin();
 			titlefont.setColor(Color.WHITE);
 			titlefont.draw(sprite, keys[i], 50 * scaleX, (y + 22) * scaleY);
-			titlefont.draw(sprite, getKeyboardKeyAssign(keysa[i]) != -1 ? Keys.toString(getKeyboardKeyAssign(keysa[i])) : "----",
+			titlefont.draw(sprite, getKeyboardKeyAssign(keysa[i]) != -1 ? (Keys.toString(getKeyboardKeyAssign(keysa[i])) == null ? "----" : Keys.toString(getKeyboardKeyAssign(keysa[i]))) : "----",
 					202 * scaleX, (y + 22) * scaleY);
 			titlefont.draw(sprite, getControllerKeyAssign(0, bmkeysa[i]) != -1
 					? BMControllerInputProcessor.BMKeys.toString(getControllerKeyAssign(0, bmkeysa[i])) : "----",
@@ -333,7 +333,7 @@ public class KeyConfiguration extends MainState {
 						(y + 22) * scaleY);
 			}
 			titlefont.draw(sprite,
-					getMidiKeyAssign(midikeysa[i]) != null ? getMidiKeyAssign(midikeysa[i]).toString() : "----",
+					getMidiKeyAssign(midikeysa[i]) != null ? (getMidiKeyAssign(midikeysa[i]).toString()) == null ? "----" : getMidiKeyAssign(midikeysa[i]).toString() : "----",
 					652 * scaleX, (y + 22) * scaleY);
 			sprite.end();
 		}

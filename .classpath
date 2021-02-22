@@ -49,5 +49,8 @@
 	<classpathentry kind="lib" path="lib/jflac-codec-1.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/luaj-jse.jar"/>
 	<classpathentry kind="lib" path="lib/sqlite-jdbc.jar"/>
+	<classpathentry kind="lib" path="lib/jlayer-libgdx.jar"/>
+	<classpathentry kind="lib" path="lib/jorbis.jar"/>
+	<classpathentry kind="lib" path="lib/lwjgl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

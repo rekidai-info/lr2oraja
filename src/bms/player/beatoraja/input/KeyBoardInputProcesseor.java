@@ -18,7 +18,7 @@ public class KeyBoardInputProcesseor extends BMSPlayerInputDevice implements Inp
 
 	private int[] keys = new int[] { Keys.Z, Keys.S, Keys.X, Keys.D, Keys.C, Keys.F, Keys.V, Keys.SHIFT_LEFT,
 			Keys.CONTROL_LEFT, Keys.COMMA, Keys.L, Keys.PERIOD, Keys.SEMICOLON, Keys.SLASH, Keys.APOSTROPHE,
-			Keys.BACKSLASH, Keys.SHIFT_RIGHT, Keys.CONTROL_RIGHT, Keys.BUTTON_A };
+			Keys.BACKSLASH, Keys.SHIFT_RIGHT, Keys.CONTROL_RIGHT, Keys.YEN };
 	private int[] control = new int[] { Keys.Q, Keys.W, Keys.E, Keys.R };
 	/**
 	 * 数字
